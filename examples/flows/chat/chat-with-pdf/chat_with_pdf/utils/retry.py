@@ -61,8 +61,7 @@ def retry_and_handle_exceptions_for_generator(
             delay = initial_delay
             for i in range(max_retries):
                 try:
-                    for value in func(*args, **kwargs):
-                        yield value
+                    yield from func(*args, **kwargs)
                     break
                 except exception_to_check as e:
                     if i == max_retries - 1:

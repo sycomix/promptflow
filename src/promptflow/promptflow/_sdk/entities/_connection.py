@@ -105,9 +105,7 @@ class _Connection(YAMLTranslatableMixin):
             "open_ai": ConnectionType.OPEN_AI.value,
         }
 
-        if typ in type_dict:
-            return type_dict.get(typ)
-        return snake_to_camel(typ)
+        return type_dict.get(typ) if typ in type_dict else snake_to_camel(typ)
 
     def keys(self) -> List:
         """Return keys of the connection properties."""
@@ -126,7 +124,7 @@ class _Connection(YAMLTranslatableMixin):
         """For scrubbed value, cli will get original for update, and prompt user to input for create."""
         if value is None or not value:
             return True
-        if all([v == "*" for v in value]):
+        if all(v == "*" for v in value):
             return True
         return value == SCRUBBED_VALUE_NO_CHANGE
 
@@ -189,15 +187,13 @@ class _Connection(YAMLTranslatableMixin):
     @classmethod
     def _from_mt_rest_object(cls, mt_rest_obj) -> "_Connection":
         type_cls, _ = cls._resolve_cls_and_type(data={"type": mt_rest_obj.connection_type})
-        obj = type_cls._from_mt_rest_object(mt_rest_obj)
-        return obj
+        return type_cls._from_mt_rest_object(mt_rest_obj)
 
     @classmethod
     def _from_orm_object_with_secrets(cls, orm_object: ORMConnection):
         # !!! Attention !!!: Do not use this function to user facing api, use _from_orm_object to remove secrets.
         type_cls, _ = cls._resolve_cls_and_type(data={"type": orm_object.connectionType})
-        obj = type_cls._from_orm_object_with_secrets(orm_object)
-        return obj
+        return type_cls._from_orm_object_with_secrets(orm_object)
 
     @classmethod
     def _from_orm_object(cls, orm_object: ORMConnection):
@@ -240,14 +236,13 @@ class _Connection(YAMLTranslatableMixin):
             PARAMS_OVERRIDE_KEY: params_override,
         }
         connection_type, type_str = cls._resolve_cls_and_type(data, params_override)
-        connection = connection_type._load_from_dict(
+        return connection_type._load_from_dict(
             data=data,
             context=context,
             additional_message=f"If you are trying to configure a job that is not of type {type_str}, please specify "
             f"the correct connection type in the 'type' property.",
             **kwargs,
         )
-        return connection
 
     def _to_execution_connection_dict(self) -> dict:
         value = {**self.configs, **self.secrets}
@@ -307,14 +302,13 @@ class _StrongTypeConnection(_Connection):
         # For not ARM strong type connection, e.g. OpenAI, api_key will not be returned, but is required argument.
         # For ARM strong type connection, api_key will be None and missing when conn._to_dict(), so set a scrubbed one.
         configs.update({"api_key": SCRUBBED_VALUE})
-        obj = type_cls(
+        return type_cls(
             name=mt_rest_obj.connection_name,
             expiry_time=mt_rest_obj.expiry_time,
             created_date=mt_rest_obj.created_date,
             last_modified_date=mt_rest_obj.last_modified_date,
             **configs,
         )
-        return obj
 
     @property
     def api_key(self):
@@ -662,9 +656,11 @@ class CustomStrongTypeConnection(_Connection):
         custom_type = kwargs.get(CustomStrongTypeConnectionConfigs.TYPE, None)
         custom_module = kwargs.get(CustomStrongTypeConnectionConfigs.MODULE, None)
         if custom_type:
-            configs.update({CustomStrongTypeConnectionConfigs.PROMPTFLOW_TYPE_KEY: custom_type})
+            configs[CustomStrongTypeConnectionConfigs.PROMPTFLOW_TYPE_KEY] = custom_type
         if custom_module:
-            configs.update({CustomStrongTypeConnectionConfigs.PROMPTFLOW_MODULE_KEY: custom_module})
+            configs[
+                CustomStrongTypeConnectionConfigs.PROMPTFLOW_MODULE_KEY
+            ] = custom_module
         self.kwargs = kwargs
         super().__init__(configs=configs, secrets=secrets, **kwargs)
         self.module = kwargs.get("module", self.__class__.__module__)
@@ -711,29 +707,29 @@ class CustomStrongTypeConnection(_Connection):
                 {CustomStrongTypeConnectionConfigs.PROMPTFLOW_PACKAGE_VERSION_KEY: self.package_version}
             )
 
-        custom_connection = CustomConnection(configs=self.configs, secrets=self.secrets, **self.kwargs)
-        return custom_connection
+        return CustomConnection(
+            configs=self.configs, secrets=self.secrets, **self.kwargs
+        )
 
     @classmethod
     def _get_custom_keys(cls, data):
         # The data could be either from yaml or from DB.
         # If from yaml, 'custom_type' and 'module' are outside the configs of data.
         # If from DB, 'custom_type' and 'module' are within the configs of data.
-        if not data.get(CustomStrongTypeConnectionConfigs.TYPE) or not data.get(
+        if data.get(CustomStrongTypeConnectionConfigs.TYPE) and data.get(
             CustomStrongTypeConnectionConfigs.MODULE
         ):
-            if (
-                not data["configs"][CustomStrongTypeConnectionConfigs.PROMPTFLOW_TYPE_KEY]
-                or not data["configs"][CustomStrongTypeConnectionConfigs.PROMPTFLOW_MODULE_KEY]
-            ):
-                raise ValueError("custom_type and module are required for custom strong type connections.")
-            else:
-                m = data["configs"][CustomStrongTypeConnectionConfigs.PROMPTFLOW_MODULE_KEY]
-                custom_cls = data["configs"][CustomStrongTypeConnectionConfigs.PROMPTFLOW_TYPE_KEY]
-        else:
             m = data[CustomStrongTypeConnectionConfigs.MODULE]
             custom_cls = data[CustomStrongTypeConnectionConfigs.TYPE]
 
+        elif (
+                not data["configs"][CustomStrongTypeConnectionConfigs.PROMPTFLOW_TYPE_KEY]
+                or not data["configs"][CustomStrongTypeConnectionConfigs.PROMPTFLOW_MODULE_KEY]
+            ):
+            raise ValueError("custom_type and module are required for custom strong type connections.")
+        else:
+            m = data["configs"][CustomStrongTypeConnectionConfigs.PROMPTFLOW_MODULE_KEY]
+            custom_cls = data["configs"][CustomStrongTypeConnectionConfigs.PROMPTFLOW_TYPE_KEY]
         try:
             module = importlib.import_module(m)
             cls = getattr(module, custom_cls)
@@ -797,16 +793,12 @@ class CustomConnection(_Connection):
 
     @classmethod
     def _load_from_dict(cls, data: Dict, context: Dict, additional_message: str = None, **kwargs):
-        # If context has params_override, it means the data would be updated by overridden values.
-        # Provide CustomStrongTypeConnectionSchema if 'custom_type' in params_override, else CustomConnectionSchema.
-        # For example:
-        #   If a user updates an existing connection by re-upserting a connection file,
-        #   the 'data' from DB is CustomConnection,
-        #   but 'params_override' would actually contain custom strong type connection data.
-        is_custom_strong_type = data.get(CustomStrongTypeConnectionConfigs.TYPE) or any(
-            CustomStrongTypeConnectionConfigs.TYPE in d for d in context.get(PARAMS_OVERRIDE_KEY, [])
-        )
-        if is_custom_strong_type:
+        if is_custom_strong_type := data.get(
+            CustomStrongTypeConnectionConfigs.TYPE
+        ) or any(
+            CustomStrongTypeConnectionConfigs.TYPE in d
+            for d in context.get(PARAMS_OVERRIDE_KEY, [])
+        ):
             return CustomStrongTypeConnection._load_from_dict(data, context, additional_message, **kwargs)
 
         return super()._load_from_dict(data, context, additional_message, **kwargs)
@@ -877,7 +869,7 @@ class CustomConnection(_Connection):
             if k == CustomStrongTypeConnectionConfigs.PROMPTFLOW_TYPE_KEY:
                 custom_type = v["value"]
                 continue
-            if not v["configValueType"] == ConfigValueType.SECRET.value:
+            if v["configValueType"] != ConfigValueType.SECRET.value:
                 continue
             try:
                 secrets[k] = decrypt_secret_value(orm_object.connectionName, v["value"])
@@ -940,9 +932,9 @@ class CustomConnection(_Connection):
 
         module = importlib.import_module(module_name)
         custom_defined_connection_class = getattr(module, custom_type_class_name)
-        connection_instance = custom_defined_connection_class(configs=self.configs, secrets=self.secrets)
-
-        return connection_instance
+        return custom_defined_connection_class(
+            configs=self.configs, secrets=self.secrets
+        )
 
 
 _supported_types = {

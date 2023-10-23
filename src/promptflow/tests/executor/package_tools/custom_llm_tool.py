@@ -14,5 +14,5 @@ class TestCustomLLMTool(ToolProvider):
     def call(self, api: str, template: PromptTemplate, **kwargs):
         prompt = Template(template, trim_blocks=True, keep_trailing_newline=True).render(**kwargs)
         assert isinstance(self.connection, AzureOpenAIConnection)
-        assert api in ["completion", "chat"]
+        assert api in {"completion", "chat"}
         return prompt

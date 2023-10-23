@@ -34,7 +34,9 @@ class AzureMachineLearningDesignerServiceClientConfiguration(Configuration):
         super(AzureMachineLearningDesignerServiceClientConfiguration, self).__init__(**kwargs)
 
         self.api_version = api_version
-        kwargs.setdefault('sdk_moniker', 'azuremachinelearningdesignerserviceclient/{}'.format(VERSION))
+        kwargs.setdefault(
+            'sdk_moniker', f'azuremachinelearningdesignerserviceclient/{VERSION}'
+        )
         self._configure(**kwargs)
 
     def _configure(

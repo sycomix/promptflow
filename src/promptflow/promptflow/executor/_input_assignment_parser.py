@@ -42,7 +42,9 @@ def parse_value(i: InputAssignment, nodes_outputs: dict, flow_inputs: dict):
                 reference_node_name=i.value,
             )
         if i.value not in nodes_outputs:
-            node_output_keys = [output_keys for output_keys in nodes_outputs.keys() if nodes_outputs]
+            node_output_keys = [
+                output_keys for output_keys in nodes_outputs if nodes_outputs
+            ]
             raise InputNotFoundFromAncestorNodeOutput(
                 message_format=(
                     "Flow execution failed. "
@@ -92,10 +94,7 @@ def parse_node_property(node_name, node_val, property=""):
                     )
                 val = val[index]
             else:
-                if isinstance(val, dict):
-                    val = val[part]
-                else:
-                    val = getattr(val, part)
+                val = val[part] if isinstance(val, dict) else getattr(val, part)
     except (KeyError, IndexError, AttributeError) as e:
         message_format = (
             "Flow execution failed. "

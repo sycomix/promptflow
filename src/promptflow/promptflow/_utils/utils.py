@@ -59,9 +59,7 @@ def reverse_transpose(values: Dict[str, List]) -> List[Dict[str, Any]]:
     _len = len(value_lists[0])
     if any(len(value_list) != _len for value_list in value_lists):
         raise Exception(f"Value list of each key must have same length, please check {values!r}.")
-    result = []
-    for i in range(_len):
-        result.append({})
+    result = [{} for _ in range(_len)]
     for key, vals in values.items():
         for _idx, val in enumerate(vals):
             result[_idx][key] = val
@@ -99,18 +97,14 @@ def try_import(module, error_message, raise_error=True):
 
 
 def is_in_ci_pipeline():
-    if os.environ.get("IS_IN_CI_PIPELINE") == "true":
-        return True
-    return False
+    return os.environ.get("IS_IN_CI_PIPELINE") == "true"
 
 
 def count_and_log_progress(
     inputs: Iterable[T], logger: logging.Logger, total_count: int, formatter="{count} / {total_count} finished."
 ) -> Iterator[T]:
-    log_interval = max(int(total_count / 10), 1)
-    count = 0
-    for item in inputs:
-        count += 1
+    log_interval = max(total_count // 10, 1)
+    for count, item in enumerate(inputs, start=1):
         if count % log_interval == 0 or count == total_count:
             logger.info(formatter.format(count=count, total_count=total_count))
 
@@ -124,7 +118,7 @@ def log_progress(
     total_count: int,
     formatter="{count} / {total_count} finished.",
 ):
-    log_interval = max(int(total_count / 10), 1)
+    log_interval = max(total_count // 10, 1)
     if count > 0 and (count % log_interval == 0 or count == total_count):
         average_execution_time = round((datetime.now().timestamp() - run_start_time.timestamp()) / count, 2)
         estimated_execution_time = round(average_execution_time * (total_count - count), 2)
@@ -159,10 +153,7 @@ def generate_elapsed_time_messages(func_name: str, start_time: float, interval: 
 
     frames = sys._current_frames()
     if thread_id not in frames:
-        thread_msg = (
-            f"thread {thread_id} cannot be found in sys._current_frames, "
-            + "maybe it has been terminated due to unexpected errors."
-        )
+        thread_msg = f"thread {thread_id} cannot be found in sys._current_frames, maybe it has been terminated due to unexpected errors."
     else:
         frame = frames[thread_id]
         stack_msgs = format_user_stacktrace(frame)
@@ -171,8 +162,9 @@ def generate_elapsed_time_messages(func_name: str, start_time: float, interval: 
     elapse_time = time.perf_counter() - start_time
     # Make elapse time a multiple of interval.
     elapse_time = round(elapse_time / interval) * interval
-    msgs = [f"{func_name} has been running for {elapse_time:.0f} seconds, {thread_msg}"]
-    return msgs
+    return [
+        f"{func_name} has been running for {elapse_time:.0f} seconds, {thread_msg}"
+    ]
 
 
 def set_context(context: contextvars.Context):

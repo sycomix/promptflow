@@ -27,8 +27,10 @@ class MetricLoggerManager:
                 logger(key, value, variant_id)
 
     def add_metric_logger(self, logger_func: Callable):
-        existing_logger = next((logger for logger in self._metric_loggers if logger is logger_func), None)
-        if existing_logger:
+        if existing_logger := next(
+            (logger for logger in self._metric_loggers if logger is logger_func),
+            None,
+        ):
             return
         if not callable(logger_func):
             return
@@ -36,9 +38,10 @@ class MetricLoggerManager:
         # We accept two kinds of metric loggers:
         # def log_metric(k, v)
         # def log_metric(k, v, variant_id)
-        if len(sign.parameters) not in [2, 3]:
+        if len(sign.parameters) in {2, 3}:
+            self._metric_loggers.append(logger_func)
+        else:
             return
-        self._metric_loggers.append(logger_func)
 
     def remove_metric_logger(self, logger_func: Callable):
         self._metric_loggers.remove(logger_func)

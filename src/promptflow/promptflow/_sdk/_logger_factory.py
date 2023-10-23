@@ -23,10 +23,14 @@ class LoggerFactory:
 
     @staticmethod
     def _find_handler(logger: logging.Logger, handler_type: type) -> Optional[logging.Handler]:
-        for log_handler in logger.handlers:
-            if isinstance(log_handler, handler_type):
-                return log_handler
-        return None
+        return next(
+            (
+                log_handler
+                for log_handler in logger.handlers
+                if isinstance(log_handler, handler_type)
+            ),
+            None,
+        )
 
     @staticmethod
     def _add_handler(logger: logging.Logger, verbosity: int, target_stdout: bool = False) -> None:

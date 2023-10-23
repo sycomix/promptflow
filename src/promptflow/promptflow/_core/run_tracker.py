@@ -300,7 +300,7 @@ class RunTracker(ThreadLocalSingleton):
         if flow_run_id:
             return [run_info for run_info in self.node_run_list if run_info.flow_run_id == flow_run_id]
 
-        return [run_info for run_info in self.node_run_list]
+        return list(self.node_run_list)
 
     def collect_child_node_runs(self, parent_run_id: str) -> List[RunInfo]:
         return [run_info for run_info in self.node_run_list if run_info.parent_run_id == parent_run_id]

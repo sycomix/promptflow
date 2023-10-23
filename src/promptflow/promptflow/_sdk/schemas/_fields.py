@@ -91,10 +91,8 @@ class LocalPathField(fields.Str):
 
     @property
     def allowed_path_type(self) -> str:
-        if self._allow_dir and self._allow_file:
-            return "directory or file"
         if self._allow_dir:
-            return "directory"
+            return "directory or file" if self._allow_file else "directory"
         return "file"
 
     def _validate(self, value):

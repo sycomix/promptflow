@@ -68,26 +68,26 @@ class AutoGPT:
         current_context = construct_prompt(current_context)
         if isinstance(self.connection, AzureOpenAIConnection):
             try:
-                response = aoai_chat(
+                return aoai_chat(
                     connection=self.connection,
                     prompt=current_context,
                     deployment_name=self.model_or_deployment_name,
                     max_tokens=tokens_remaining,
-                    functions=self.functions)
-                return response
+                    functions=self.functions,
+                )
             except Exception as e:
                 if "The API deployment for this resource does not exist" in str(e):
                     raise Exception(
                         "Please fill in the deployment name of your Azure OpenAI resource gpt-4 model.")
 
         elif isinstance(self.connection, OpenAIConnection):
-            response = openai_chat(
+            return openai_chat(
                 connection=self.connection,
                 prompt=current_context,
                 model=self.model_or_deployment_name,
                 max_tokens=tokens_remaining,
-                functions=self.functions)
-            return response
+                functions=self.functions,
+            )
         else:
             raise ValueError("Connection must be an instance of AzureOpenAIConnection or OpenAIConnection")
 
@@ -127,12 +127,12 @@ class AutoGPT:
                             )
                         result_length = count_string_tokens(command_result)
 
-                        if result_length + 600 > 4000:
+                        if result_length > 3400:
                             command_result = f"Failure: function {function_name} returned too much output. Do not " \
-                                             f"execute this function again with the same arguments."
+                                                 f"execute this function again with the same arguments."
                     else:
                         command_result = f"Unknown function '{function_name}'. Please refer to available functions " \
-                                         f"defined in functions parameter."
+                                             f"defined in functions parameter."
 
                 # Append command result to the message history
                 self.full_message_history.append(create_chat_message("function", str(command_result), function_name))

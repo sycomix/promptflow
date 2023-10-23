@@ -9,10 +9,10 @@ def accuracy_aggregate(processed_results: List[int]):
     num_exception = 0
     num_correct = 0
 
-    for i in range(len(processed_results)):
-        if processed_results[i] == -1:
+    for processed_result in processed_results:
+        if processed_result == -1:
             num_exception += 1
-        elif processed_results[i] == 1:
+        elif processed_result == 1:
             num_correct += 1
 
     num_total = len(processed_results)

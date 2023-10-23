@@ -17,4 +17,4 @@ class MyTool(ToolProvider):
         # Usually connection contains configs to connect to an API.
         # Use CustomConnection is a dict. You can use it like: connection.api_key, connection.api_base
         # Not all tools need a connection. You can remove it if you don't need it.
-        return "Hello " + input_text
+        return f"Hello {input_text}"

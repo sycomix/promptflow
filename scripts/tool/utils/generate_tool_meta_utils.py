@@ -21,9 +21,7 @@ def asdict_without_none(obj):
 def is_tool(f):
     if not isinstance(f, types.FunctionType):
         return False
-    if not hasattr(f, "__tool"):
-        return False
-    return True
+    return bool(hasattr(f, "__tool"))
 
 
 def collect_tool_functions_in_module(m):

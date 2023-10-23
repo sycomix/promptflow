@@ -94,7 +94,9 @@ class ToolExecutionError(UserErrorException):
                 #   In "my_node", line 1, in <module>
                 if self._node_name:
                     # policy: http://policheck.azurewebsites.net/Pages/TermInfo.aspx?LCID=9&TermID=79670
-                    formatted_tb = formatted_tb.replace('File "<string>"', 'In "{}"'.format(self._node_name))
+                    formatted_tb = formatted_tb.replace(
+                        'File "<string>"', f'In "{self._node_name}"'
+                    )
 
                 return formatted_tb
 

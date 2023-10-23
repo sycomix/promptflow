@@ -25,8 +25,7 @@ def strip_comments(code):
     text = text.replace("<your_api_base>", "$aoai_api_endpoint")
     text = text.replace("<your_subscription_id>", "$test_workspace_sub_id")
     text = text.replace("<your_resource_group_name>", "$test_workspace_rg")
-    text = text.replace("<your_workspace_name>", "$test_workspace_name")
-    return text
+    return text.replace("<your_workspace_name>", "$test_workspace_name")
 
 
 def prepare(doc):

@@ -76,15 +76,12 @@ class PromptflowException(Exception):
             return {}
 
         required_arguments = self.get_arguments_from_message_format(self.message_format)
-        parameters = {}
-        for argument in required_arguments:
-            if argument not in self._kwargs:
-                # Set a default value for the missing argument to avoid KeyError.
-                # For long term solution, use CI to guarantee the message_format and message_parameters are in sync.
-                parameters[argument] = f"<{argument}>"
-            else:
-                parameters[argument] = self._kwargs[argument]
-        return parameters
+        return {
+            argument: f"<{argument}>"
+            if argument not in self._kwargs
+            else self._kwargs[argument]
+            for argument in required_arguments
+        }
 
     @cached_property
     def serializable_message_parameters(self):
@@ -122,10 +119,7 @@ class PromptflowException(Exception):
     @property
     def reference_code(self):
         """The reference code of the error."""
-        if self.module:
-            return f"{self.target}/{self.module}"
-        else:
-            return self.target
+        return f"{self.target}/{self.module}" if self.module else self.target
 
     @property
     def inner_exception(self):

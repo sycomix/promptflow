@@ -21,7 +21,5 @@ def acquire_lock(filename):
             yield f
             msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
 
-    try:
+    with contextlib.suppress(OSError):
         os.remove(filename)
-    except OSError:
-        pass  # best effort to remove the lock file

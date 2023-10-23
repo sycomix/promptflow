@@ -99,10 +99,7 @@ class FlowsProviderOperations:
 
         deserialized = self._deserialize('UnversionedEntityResponseDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_index_entity_by_id.metadata = {'url': '/flow/v1.0/flows/getIndexEntities'}  # type: ignore
 
@@ -165,10 +162,7 @@ class FlowsProviderOperations:
 
         deserialized = self._deserialize('UnversionedRebuildResponseDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_updated_entity_ids_for_workspace.metadata = {'url': '/flow/v1.0/flows/rebuildIndex'}  # type: ignore
 

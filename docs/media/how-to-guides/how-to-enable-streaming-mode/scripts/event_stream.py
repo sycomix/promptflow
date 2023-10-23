@@ -49,21 +49,19 @@ class Event:
         prefix = parts[0]
         data = parts[1].strip()
 
-        if prefix == "id":
-            if self.id is not None:
-                raise ValueError("Bad event: event id cannot be specified multiple times.")
-            self.event = data
-
-        if prefix == "event":
+        if prefix == "data":
+            self.data = data if not self.data else "\n".join((self.data, data))
+        elif prefix == "event":
             if self.event is not None:
                 raise ValueError("Bad event: event type cannot be specified multiple times.")
             self.event = data
 
-        if prefix == "data":
-            if not self.data:
-                self.data = data
+        elif prefix == "id":
+            if self.id is None:
+                self.event = data
+
             else:
-                self.data = "\n".join((self.data, data))
+                raise ValueError("Bad event: event id cannot be specified multiple times.")
 
         # TODO: Handle other prefixes here
 

@@ -16,7 +16,7 @@ def get_page_sentence(page, count: int = 10):
     sentences = []
     for p in paragraphs:
         sentences += p.split('. ')
-    sentences = [s.strip() + '.' for s in sentences if s.strip()]
+    sentences = [f'{s.strip()}.' for s in sentences if s.strip()]
     # get first `count` number of sentences
     return ' '.join(sentences[:count])
 
@@ -42,15 +42,16 @@ def search(entity: str, count: int = 10):
     }
     response_text = requests.get(search_url, headers=headers).text
     soup = BeautifulSoup(response_text, features="html.parser")
-    result_divs = soup.find_all("div", {"class": "mw-search-result-heading"})
-    if result_divs:  # mismatch
+    if result_divs := soup.find_all(
+        "div", {"class": "mw-search-result-heading"}
+    ):
         result_titles = [decode_str(div.get_text().strip()) for div in result_divs]
         result_titles = [remove_nested_parentheses(result_title) for result_title in result_titles]
         obs = f"Could not find {entity}. Similar: {result_titles[:5]}."
     else:
         page_content = [p_ul.get_text().strip() for p_ul in soup.find_all("p") + soup.find_all("ul")]
         if any("may refer to:" in p for p in page_content):
-            obs = search("[" + entity + "]")
+            obs = search(f"[{entity}]")
         else:
             page = ""
             for content in page_content:

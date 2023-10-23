@@ -64,7 +64,6 @@ def _get_datastore_name(*, datastore_name: Optional[str] = WORKSPACE_BLOB_STORE)
 
 def get_datastore_info(operations: DatastoreOperations, name: str) -> Dict[str, str]:
     """Get datastore account, type, and auth information."""
-    datastore_info = {}
     if name:
         datastore = operations.get(name, include_secrets=True)
     else:
@@ -72,11 +71,13 @@ def get_datastore_info(operations: DatastoreOperations, name: str) -> Dict[str, 
 
     storage_endpoint = _get_storage_endpoint_from_metadata()
     credentials = datastore.credentials
-    datastore_info["storage_type"] = datastore.type
-    datastore_info["storage_account"] = datastore.account_name
-    datastore_info["account_url"] = STORAGE_ACCOUNT_URLS[datastore.type].format(
-        datastore.account_name, storage_endpoint
-    )
+    datastore_info = {
+        "storage_type": datastore.type,
+        "storage_account": datastore.account_name,
+        "account_url": STORAGE_ACCOUNT_URLS[datastore.type].format(
+            datastore.account_name, storage_endpoint
+        ),
+    }
     if isinstance(credentials, AccountKeyConfiguration):
         datastore_info["credential"] = credentials.account_key
     else:
@@ -124,13 +125,13 @@ def list_logs_in_datastore(ds_info: Dict[str, str], prefix: str, legacy_log_fold
         storage_type=ds_info["storage_type"],
     )
 
-    items = storage_client.list(starts_with=prefix + "/user_logs/")
+    items = storage_client.list(starts_with=f"{prefix}/user_logs/")
     # Append legacy log files if present
     items.extend(storage_client.list(starts_with=prefix + legacy_log_folder_name))
 
     log_dict = {}
     for item_name in items:
-        sub_name = item_name.split(prefix + "/")[1]
+        sub_name = item_name.split(f"{prefix}/")[1]
         if isinstance(storage_client, BlobStorageClient):
             token = generate_blob_sas(
                 account_name=ds_info["storage_account"],
@@ -150,7 +151,9 @@ def list_logs_in_datastore(ds_info: Dict[str, str], prefix: str, legacy_log_fold
                 expiry=datetime.utcnow() + timedelta(minutes=30),
             )
 
-        log_dict[sub_name] = "{}/{}/{}?{}".format(ds_info["account_url"], ds_info["container_name"], item_name, token)
+        log_dict[
+            sub_name
+        ] = f'{ds_info["account_url"]}/{ds_info["container_name"]}/{item_name}?{token}'
     return log_dict
 
 
@@ -232,7 +235,7 @@ def download_artifact_from_storage_url(
     datastore_name = _get_datastore_name(datastore_name=datastore_name)
     datastore_info = get_datastore_info(datastore_operation, datastore_name)
     starts_with = get_artifact_path_from_storage_url(
-        blob_url=str(blob_url), container_name=datastore_info.get("container_name")
+        blob_url=blob_url, container_name=datastore_info.get("container_name")
     )
     return download_artifact(
         starts_with=starts_with,
@@ -292,7 +295,7 @@ def _upload_to_datastore(
         ignore_file = get_ignore_file(path)
     if not asset_hash:
         asset_hash = get_object_hash(path, ignore_file)
-    artifact = upload_artifact(
+    return upload_artifact(
         str(path),
         datastore_operation,
         operation_scope,
@@ -304,7 +307,6 @@ def _upload_to_datastore(
         ignore_file=ignore_file,
         sas_uri=sas_uri,
     )
-    return artifact
 
 
 def _upload_and_generate_remote_uri(
@@ -378,11 +380,10 @@ def _check_and_upload_path(
     if (
         hasattr(artifact, "local_path")
         and artifact.local_path is not None
-        or (
-            hasattr(artifact, "path")
-            and artifact.path is not None
-            and not (is_url(artifact.path) or is_mlflow_uri(artifact.path))
-        )
+        or hasattr(artifact, "path")
+        and artifact.path is not None
+        and not is_url(artifact.path)
+        and not is_mlflow_uri(artifact.path)
     ):
         path = (
             Path(artifact.path)
@@ -427,5 +428,5 @@ def _check_and_upload_env_build_context(
             show_progress=show_progress,
         )
         # TODO: Depending on decision trailing "/" needs to stay or not. EMS requires it to be present
-        environment.build.path = uploaded_artifact.full_storage_path + "/"
+        environment.build.path = f"{uploaded_artifact.full_storage_path}/"
     return environment

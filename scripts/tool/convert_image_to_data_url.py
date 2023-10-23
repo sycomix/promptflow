@@ -13,8 +13,7 @@ def get_image_size(image_path):
 
 def get_image_storage_size(image_path):
     file_size_bytes = os.path.getsize(image_path)
-    file_size_mb = file_size_bytes / (1024 * 1024)
-    return file_size_mb
+    return file_size_bytes / (1024 * 1024)
 
 
 def image_to_data_url(image_path):
@@ -31,13 +30,11 @@ def image_to_data_url(image_path):
     buffered = io.BytesIO()
     img.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue())
-    data_url = 'data:image/png;base64,' + img_str.decode('utf-8')
-
-    return data_url
+    return 'data:image/png;base64,' + img_str.decode('utf-8')
 
 
 def create_html_file(data_uri, output_path):
-    html_content = '<html>\n<body>\n<img src="{}" alt="My Image">\n</body>\n</html>'.format(data_uri)
+    html_content = f'<html>\n<body>\n<img src="{data_uri}" alt="My Image">\n</body>\n</html>'
 
     with open(output_path, 'w') as file:
         file.write(html_content)
@@ -60,5 +57,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     data_url = image_to_data_url(args.image_path)
-    print("Your image data uri: \n{}".format(data_url))
+    print(f"Your image data uri: \n{data_url}")
     create_html_file(data_url, args.output)

@@ -15,8 +15,7 @@ def extract_delay_from_rate_limit_error_msg(text):
     import re
 
     pattern = r"retry after (\d+)"
-    match = re.search(pattern, text)
-    if match:
+    if match := re.search(pattern, text):
         retry_time_from_message = match.group(1)
         return float(retry_time_from_message)
     else:

@@ -119,8 +119,8 @@ def test_serialize_connection():
 @pytest.mark.unittest
 def test_serialize_generator():
     def generator():
-        for i in range(3):
-            yield i
+        yield from range(3)
+
     g = GeneratorProxy(generator())
     next(g)
     assert serialize(g) == [0]

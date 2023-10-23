@@ -81,9 +81,7 @@ class ValueType(str, Enum):
             return ValueType.BOOL
         if t == str:
             return ValueType.STRING
-        if t == list:
-            return ValueType.LIST
-        return ValueType.OBJECT
+        return ValueType.LIST if t == list else ValueType.OBJECT
 
 
 class ToolMetaGenerator(BaseGenerator):

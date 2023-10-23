@@ -47,11 +47,11 @@ def apply_delta(base: dict, delta: dict):
 def score(url, api_key, body, stream=True, on_event=None):
     headers = {
         "Content-Type": "application/json",
-        "Authorization": ("Bearer " + api_key),
-        # The azureml-model-deployment header will force the request to go to a specific deployment.
-        # Remove this header to have the request observe the endpoint traffic rules
+        "Authorization": f"Bearer {api_key}",
         "azureml-model-deployment": "blue",
-        "Accept": "text/event-stream, application/json" if stream else "application/json"
+        "Accept": "text/event-stream, application/json"
+        if stream
+        else "application/json",
     }
 
     logger.info("Sending HTTP request...")
@@ -83,18 +83,17 @@ def score(url, api_key, body, stream=True, on_event=None):
     time1 = datetime.now()
     try:
         content_type = response.headers.get('Content-Type')
-        if "text/event-stream" in content_type:
-            output = {}
-            event_stream = EventStream(response.iter_lines())
-            for event in event_stream:
-                if on_event:
-                    on_event(event)
-
-                dct = json.loads(event.data)
-                apply_delta(output, dct)
-            return output, True
-        else:
+        if "text/event-stream" not in content_type:
             return response.json(), False
+        output = {}
+        event_stream = EventStream(response.iter_lines())
+        for event in event_stream:
+            if on_event:
+                on_event(event)
+
+            dct = json.loads(event.data)
+            apply_delta(output, dct)
+        return output, True
     finally:
         time2 = datetime.now()
         logger.info("\nResponse reading elapsed: %s", time2 - time1)
@@ -116,7 +115,7 @@ class ChatApp:
         self._endpoint_url = endpoint.scoring_uri
         self._endpoint_key = keys.primary_key if endpoint.auth_mode == "key" else keys.access_token
 
-        logger.info(f"Done.")
+        logger.info("Done.")
         logger.debug(f"Target endpoint: {endpoint.id}")
 
     @property
@@ -150,12 +149,7 @@ class ChatApp:
             payload = self.get_payload(chat_input=chat_input, chat_history=self._chat_history)
             output, stream = score(self.url, self.api_key, payload, stream=self._stream, on_event=on_event)
             # We don't use self._stream here since the result may not always be the same as self._stream specified.
-            if stream:
-                # Print a new line at the end of the content to make sure
-                # the next logger line will always starts from a new line.
-                pass
-                # print("\n")
-            else:
+            if not stream:
                 print(output.get(self._chat_output_name, "<empty>"))
 
             self._chat_history.append({

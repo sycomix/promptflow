@@ -22,9 +22,7 @@ def _casting_type(typ):
         ConnectionType.OPEN_AI: "open_ai",
     }
 
-    if typ in type_dict:
-        return type_dict.get(typ)
-    return camel_to_snake(typ)
+    return type_dict.get(typ) if typ in type_dict else camel_to_snake(typ)
 
 
 class ConnectionSchema(YamlFileSchema):
@@ -128,16 +126,18 @@ class CustomStrongTypeConnectionSchema(CustomConnectionSchema):
     # TODO: validate configs and secrets
     @validates("configs")
     def validate_configs(self, value):
-        schema_config_keys = self.context.get(SCHEMA_KEYS_CONTEXT_CONFIG_KEY, None)
-        if schema_config_keys:
+        if schema_config_keys := self.context.get(
+            SCHEMA_KEYS_CONTEXT_CONFIG_KEY, None
+        ):
             for key in value:
                 if CustomStrongTypeConnectionConfigs.is_custom_key(key) and key not in schema_config_keys:
                     raise ValidationError(f"Invalid config key {key}, please check the schema.")
 
     @validates("secrets")
     def validate_secrets(self, value):
-        schema_secret_keys = self.context.get(SCHEMA_KEYS_CONTEXT_SECRET_KEY, None)
-        if schema_secret_keys:
+        if schema_secret_keys := self.context.get(
+            SCHEMA_KEYS_CONTEXT_SECRET_KEY, None
+        ):
             for key in value:
                 if key not in schema_secret_keys:
                     raise ValidationError(f"Invalid secret key {key}, please check the schema.")

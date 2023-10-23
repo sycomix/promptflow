@@ -44,7 +44,7 @@ class TestLangchain:
         bulk_results = executor.exec_bulk(bulk_inputs)
         assert isinstance(bulk_results, BulkResult)
         assert len(bulk_results.outputs) == len(bulk_inputs)
-        for _, line_result in enumerate(bulk_results.line_results):
+        for line_result in bulk_results.line_results:
             assert isinstance(line_result, LineResult)
             assert line_result.run_info.status == Status.Completed
         openai_metrics = bulk_results.get_openai_metrics()

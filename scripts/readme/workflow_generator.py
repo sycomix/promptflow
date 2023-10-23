@@ -34,7 +34,7 @@ def write_notebook_workflow(notebook, name, output_telemetry=Telemetry()):
     temp_name_list = [
         x
         for x in temp_name_list
-        if x != "tutorials" and x != "examples" and x != "ipynb"
+        if x not in ["tutorials", "examples", "ipynb"]
     ]
     temp_name_list = [x.replace("-", "") for x in temp_name_list]
     workflow_name = "_".join(["samples"] + temp_name_list)
@@ -115,9 +115,7 @@ def write_workflows(notebooks, output_telemetries=[]):
 def local_filter(callback, array):
     results = []
     for index, item in enumerate(array):
-        result = callback(item, index, array)
-        # if returned true, append item to results
-        if result:
+        if result := callback(item, index, array):
             results.append(item)
     return results
 

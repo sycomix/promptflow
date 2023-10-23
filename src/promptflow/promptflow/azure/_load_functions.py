@@ -36,6 +36,4 @@ def load_flow(
     """
     from promptflow.azure._entities._flow import Flow
 
-    if is_arm_id(source):
-        return source
-    return Flow(path=Path(source))
+    return source if is_arm_id(source) else Flow(path=Path(source))

@@ -7,12 +7,13 @@ def show_diff(left_content, right_content, name="file"):
     html = d.make_file(
         left_content.splitlines(),
         right_content.splitlines(),
-        "origin " + name,
-        "new " + name,
+        f"origin {name}",
+        f"new {name}",
         context=True,
-        numlines=20)
+        numlines=20,
+    )
     html = html.encode()
-    html_name = name + "_diff.html"
+    html_name = f"{name}_diff.html"
     with open(html_name, "w+b") as fp:
         fp.write(html)
     webbrowser.open(html_name)

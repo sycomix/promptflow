@@ -18,13 +18,12 @@ def get_imports(content):
 
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
-            for n in node.names:
-                import_statements.append(f"import {n.name}")
+            import_statements.extend(f"import {n.name}" for n in node.names)
         elif isinstance(node, ast.ImportFrom):
             module_name = node.module
-            for n in node.names:
-                import_statements.append(f"from {module_name} import {n.name}")
-
+            import_statements.extend(
+                f"from {module_name} import {n.name}" for n in node.names
+            )
     return import_statements
 
 
@@ -48,7 +47,7 @@ async def async_generate_docstring(divided: list[str]):
         try:
             llm.validate_tokens(llm.create_prompt(docstring_prompt(code=item, module=modules)))
         except PromptLimitException as e:
-            logging.warning(e.message + ', will divide the code into two parts.')
+            logging.warning(f'{e.message}, will divide the code into two parts.')
             divided_tmp = Divider.divide_half(item)
             if len(divided_tmp) > 1:
                 divided.extend(list(reversed(divided_tmp)))

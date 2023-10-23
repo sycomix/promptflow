@@ -123,9 +123,7 @@ def get_ignore_file(directory_path: Union[Path, str]) -> Optional[IgnoreFile]:
 
     if aml_ignore.exists():
         return aml_ignore
-    if git_ignore.exists():
-        return git_ignore
-    return IgnoreFile()
+    return git_ignore if git_ignore.exists() else IgnoreFile()
 
 
 def get_upload_files_from_folder(

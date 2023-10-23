@@ -113,9 +113,9 @@ class TestUtils:
         assert connections["test_custom_connection"]["value"]["key2"] == "value2"
 
     def test_generate_flow_tools_json(self) -> None:
+        flow_src_path = "./tests/test_configs/flows/flow_with_sys_inject"
         # call twice to ensure system path won't be affected during generation
         for _ in range(2):
-            flow_src_path = "./tests/test_configs/flows/flow_with_sys_inject"
             with tempfile.TemporaryDirectory() as temp_dir:
                 flow_dst_path = os.path.join(temp_dir, "flow_with_sys_inject")
                 shutil.copytree(flow_src_path, flow_dst_path)
@@ -164,7 +164,7 @@ class TestUtils:
 
         # Create and start threads
         for _ in range(concurrent_count):
-            thread = threading.Thread(target=refresh_connections_dir, args={None, None})
+            thread = threading.Thread(target=refresh_connections_dir, args={None})
             thread.start()
             threads.append(thread)
 

@@ -34,8 +34,7 @@ class CredentialScrubberFormatter(logging.Formatter):
 
     @property
     def credential_scrubber(self):
-        credential_scrubber = self._context_var.get()
-        if credential_scrubber:
+        if credential_scrubber := self._context_var.get():
             return credential_scrubber
         return self._default_scrubber
 
@@ -133,8 +132,7 @@ class FileHandlerConcurrentWrapper(logging.Handler):
 
     def clear(self):
         """Close file handler and clear context variable."""
-        handler: FileHandler = self._context_var.get()
-        if handler:
+        if handler := self._context_var.get():
             try:
                 handler.close()
             except:  # NOQA: E722
@@ -185,9 +183,7 @@ class LogContext:
     @staticmethod
     def get_current() -> Optional["LogContext"]:
         global logger_contexts
-        if logger_contexts:
-            return logger_contexts[-1]
-        return None
+        return logger_contexts[-1] if logger_contexts else None
 
     @staticmethod
     def set_current(context: "LogContext"):
@@ -273,8 +269,7 @@ def update_log_path(log_path: str, input_logger: logging.Logger = None):
 def update_single_log_path(log_path: str, logger_: logging.Logger):
     for wrapper in logger_.handlers:
         if isinstance(wrapper, FileHandlerConcurrentWrapper):
-            handler: FileHandler = wrapper.handler
-            if handler:
+            if handler := wrapper.handler:
                 wrapper.handler = type(handler)(log_path, handler._formatter)
 
 
@@ -287,7 +282,8 @@ def scrub_credentials(s: str):
     for h in logger.handlers:
         if isinstance(h, FileHandlerConcurrentWrapper):
             if h.handler and h.handler._formatter:
-                credential_scrubber = h.handler._formatter.credential_scrubber
-                if credential_scrubber:
+                if (
+                    credential_scrubber := h.handler._formatter.credential_scrubber
+                ):
                     return credential_scrubber.scrub(s)
     return CredentialScrubber().scrub(s)

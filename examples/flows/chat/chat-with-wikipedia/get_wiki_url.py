@@ -31,8 +31,9 @@ def get_wiki_url(entity: str, count=2):
         if response.status_code == 200:
             # Parse the HTML content using BeautifulSoup
             soup = bs4.BeautifulSoup(response.text, "html.parser")
-            mw_divs = soup.find_all("div", {"class": "mw-search-result-heading"})
-            if mw_divs:  # mismatch
+            if mw_divs := soup.find_all(
+                "div", {"class": "mw-search-result-heading"}
+            ):
                 result_titles = [decode_str(div.get_text().strip()) for div in mw_divs]
                 result_titles = [remove_nested_parentheses(result_title) for result_title in result_titles]
                 print(f"Could not find {entity}. Similar entity: {result_titles[:count]}.")
@@ -42,7 +43,7 @@ def get_wiki_url(entity: str, count=2):
             else:
                 page_content = [p_ul.get_text().strip() for p_ul in soup.find_all("p") + soup.find_all("ul")]
                 if any("may refer to:" in p for p in page_content):
-                    url_list.extend(get_wiki_url("[" + entity + "]"))
+                    url_list.extend(get_wiki_url(f"[{entity}]"))
                 else:
                     url_list.append(url)
         else:
@@ -53,5 +54,5 @@ def get_wiki_url(entity: str, count=2):
             print(msg)
         return url_list[:count]
     except Exception as e:
-        print("Get url failed with error: {}".format(e))
+        print(f"Get url failed with error: {e}")
         return url_list

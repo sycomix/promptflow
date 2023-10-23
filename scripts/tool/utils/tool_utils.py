@@ -12,9 +12,7 @@ def value_to_str(val):
     if val is None:
         # Dump default: "" in json to avoid UI validation error
         return ""
-    if isinstance(val, Enum):
-        return val.value
-    return str(val)
+    return val.value if isinstance(val, Enum) else str(val)
 
 
 def resolve_annotation(anno) -> Union[str, list]:

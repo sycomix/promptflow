@@ -59,9 +59,7 @@ class TestExecutor:
             if isinstance(inputs, list) and len(inputs) > 0:
                 return inputs
             elif isinstance(inputs, dict):
-                if return_dict:
-                    return inputs
-                return [inputs]
+                return inputs if return_dict else [inputs]
             else:
                 raise Exception(f"Invalid type of bulk input: {inputs}")
         return [self.get_line_inputs() for _ in range(nlinee)]

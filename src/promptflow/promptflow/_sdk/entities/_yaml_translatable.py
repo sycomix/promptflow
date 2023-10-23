@@ -22,7 +22,7 @@ class YAMLTranslatableMixin(abc.ABC):
         """
 
     @classmethod
-    def _get_schema_cls(self):
+    def _get_schema_cls(cls):
         pass
 
     def _to_dict(self) -> Dict:

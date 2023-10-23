@@ -77,19 +77,14 @@ def get_workspace_triad_from_local() -> AzureMLWorkspaceTriad:
     azure_config_path = Path.home() / ".azure"
     config_parser = ConfigParser()
     # subscription id
-    try:
+    with contextlib.suppress(Exception):
         config_parser.read_file(open(azure_config_path / "clouds.config"))
         subscription_id = config_parser["AzureCloud"]["subscription"]
-    except Exception:  # pylint: disable=broad-except
-        pass
     # resource group name & workspace name
-    try:
+    with contextlib.suppress(Exception):
         config_parser.read_file(open(azure_config_path / "config"))
         resource_group_name = config_parser["defaults"]["group"]
         workspace_name = config_parser["defaults"]["workspace"]
-    except Exception:  # pylint: disable=broad-except
-        pass
-
     return AzureMLWorkspaceTriad(subscription_id, resource_group_name, workspace_name)
 
 
@@ -107,25 +102,23 @@ def get_credentials_for_cli():
     # https://msdata.visualstudio.com/Vienna/_search?text=AZUREML_OBO_ENABLED&type=code&pageSize=25&filters=ProjectFilters%7BVienna%7D&action=contents
     if os.getenv(IdentityEnvironmentVariable.OBO_ENABLED_FLAG):
         logger.info("User identity is configured, use OBO credential.")
-        credential = AzureMLOnBehalfOfCredential()
+        return AzureMLOnBehalfOfCredential()
+    elif client_id_from_env := os.getenv(
+        IdentityEnvironmentVariable.DEFAULT_IDENTITY_CLIENT_ID
+    ):
+        # use managed identity when client id is available from environment variable.
+        # reference code:
+        # https://learn.microsoft.com/en-us/azure/machine-learning/how-to-identity-based-service-authentication?tabs=cli#compute-cluster
+        logger.info("Use managed identity credential.")
+        return ManagedIdentityCredential(client_id=client_id_from_env)
+    elif is_in_ci_pipeline():
+        # use managed identity when executing in CI pipeline.
+        logger.info("Use azure cli credential.")
+        return AzureCliCredential()
     else:
-        client_id_from_env = os.getenv(IdentityEnvironmentVariable.DEFAULT_IDENTITY_CLIENT_ID)
-        if client_id_from_env:
-            # use managed identity when client id is available from environment variable.
-            # reference code:
-            # https://learn.microsoft.com/en-us/azure/machine-learning/how-to-identity-based-service-authentication?tabs=cli#compute-cluster
-            logger.info("Use managed identity credential.")
-            credential = ManagedIdentityCredential(client_id=client_id_from_env)
-        elif is_in_ci_pipeline():
-            # use managed identity when executing in CI pipeline.
-            logger.info("Use azure cli credential.")
-            credential = AzureCliCredential()
-        else:
-            # use default Azure credential to handle other cases.
-            logger.info("Use default credential.")
-            credential = DefaultAzureCredential()
-
-    return credential
+        # use default Azure credential to handle other cases.
+        logger.info("Use default credential.")
+        return DefaultAzureCredential()
 
 
 def get_client_for_cli(*, subscription_id: str = None, resource_group_name: str = None, workspace_name: str = None):
@@ -142,13 +135,13 @@ def get_client_for_cli(*, subscription_id: str = None, resource_group_name: str 
         subscription_id = subscription_id or os.getenv("AZUREML_ARM_SUBSCRIPTION")
         resource_group_name = resource_group_name or os.getenv("AZUREML_ARM_RESOURCEGROUP")
 
-    missing_fields = []
-    for key in ["workspace_name", "subscription_id", "resource_group_name"]:
-        if not locals()[key]:
-            missing_fields.append(key)
-    if missing_fields:
+    if missing_fields := [
+        key
+        for key in ["workspace_name", "subscription_id", "resource_group_name"]
+        if not locals()[key]
+    ]:
         raise UserErrorException(
-            "Please provide all required fields to work on specific workspace: {}".format(", ".join(missing_fields)),
+            f'Please provide all required fields to work on specific workspace: {", ".join(missing_fields)}',
             target=ErrorTarget.CONTROL_PLANE_SDK,
         )
 
@@ -207,7 +200,7 @@ def _dump_entity_with_warnings(entity) -> Dict:
     try:
         return entity._to_dict()  # type: ignore
     except Exception as err:
-        logger.warning("Failed to deserialize response: " + str(err))
+        logger.warning(f"Failed to deserialize response: {str(err)}")
         logger.warning(str(entity))
         logger.debug(traceback.format_exc())
 
@@ -236,10 +229,10 @@ def _build_sorted_column_widths_tuple_list(
     values2: Dict[str, int],
     margins: Dict[str, int],
 ) -> List[Tuple[str, int]]:
-    res = []
-    for column in columns:
-        value = max(values1[column], values2[column]) + margins[column]
-        res.append((column, value))
+    res = [
+        (column, max(values1[column], values2[column]) + margins[column])
+        for column in columns
+    ]
     res.sort(key=lambda x: x[1], reverse=True)
     return res
 
@@ -274,9 +267,7 @@ def _calculate_column_widths(df: pd.DataFrame, terminal_width: int) -> List[int]
     header_widths, content_avg_widths, content_max_widths, column_margin = {}, {}, {}, {}
     for column in df.columns:
         header_widths[column] = len(column)
-        contents = []
-        for value in df[column]:
-            contents.append(len(str(value)))
+        contents = [len(str(value)) for value in df[column]]
         content_avg_widths[column] = sum(contents) // len(contents)
         content_max_widths[column] = max(contents)
         # if header is longer than the longest content, the margin is 4; otherwise is 2
@@ -336,9 +327,12 @@ def pretty_print_dataframe_as_table(df: pd.DataFrame) -> None:
 
 
 def is_format_exception():
-    if os.environ.get("PROMPTFLOW_STRUCTURE_EXCEPTION_OUTPUT", "false").lower() == "true":
-        return True
-    return False
+    return (
+        os.environ.get(
+            "PROMPTFLOW_STRUCTURE_EXCEPTION_OUTPUT", "false"
+        ).lower()
+        == "true"
+    )
 
 
 def exception_handler(command: str):
@@ -409,7 +403,7 @@ def get_secret_input(prompt, mask="*"):
             return "".join(secret_input)
         elif key == 3:  # Ctrl-C pressed.
             raise KeyboardInterrupt()
-        elif key in (8, 127):  # Backspace/Del key erases previous output.
+        elif key in {8, 127}:  # Backspace/Del key erases previous output.
             if len(secret_input) > 0:
                 # Erases previous character.
                 sys.stdout.write("\b \b")  # \b doesn't erase the character, it just moves the cursor back.

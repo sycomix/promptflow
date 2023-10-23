@@ -15,7 +15,7 @@ module_logger = logging.getLogger(__name__)
 
 
 def _pd_read_file(local_path: str, logger: logging.Logger = None) -> pd.DataFrame:
-    local_path = str(local_path)
+    local_path = local_path
     # if file is empty, return empty DataFrame directly
     if (
         os.path.getsize(local_path) == 0
@@ -73,8 +73,8 @@ def _handle_dir(dir_path: str, max_rows_count: int, logger: logging.Logger = Non
     df = pd.DataFrame()
 
     # BFS traverse directory to collect files to load
-    target_dir = [str(dir_path)]
-    while len(target_dir) > 0:
+    target_dir = [dir_path]
+    while target_dir:
         files, dirs = _bfs_dir(target_dir)
         for file in files:
             current_df = _pd_read_file(file, logger=logger)
@@ -93,11 +93,7 @@ def load_data(local_path: str, *, logger: logging.Logger = None, max_rows_count:
     """load data from local file"""
     df = load_df(local_path, logger, max_rows_count=max_rows_count)
 
-    # convert dataframe to list of dict
-    result = []
-    for _, row in df.iterrows():
-        result.append(row.to_dict())
-    return result
+    return [row.to_dict() for _, row in df.iterrows()]
 
 
 def load_df(local_path: str, logger: logging.Logger = None, max_rows_count: int = None) -> pd.DataFrame:

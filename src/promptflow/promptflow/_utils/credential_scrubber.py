@@ -12,12 +12,7 @@ class CredentialScrubber:
     LENGTH_THRESHOLD = 2
 
     def __init__(self):
-        self.default_regex_set = set(
-            [
-                r"(?<=sig=)[^\s;&]+",  # Replace signature.
-                r"(?<=key=)[^\s;&]+",  # Replace key.
-            ]
-        )
+        self.default_regex_set = {r"(?<=sig=)[^\s;&]+", r"(?<=key=)[^\s;&]+"}
         self.default_str_set = set()
         self.custom_regex_set = set()
         self.custom_str_set = set()

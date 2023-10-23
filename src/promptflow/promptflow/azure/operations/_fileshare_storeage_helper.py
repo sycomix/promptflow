@@ -71,7 +71,7 @@ class FlowFileStorageClient(FileStorageClient):
         msg = f"Uploading {formatted_path}"
 
         # lock to prevent concurrent uploading of the same file or directory
-        with uploading_lock[self.directory_client.directory_path + "/" + dest]:
+        with uploading_lock[f"{self.directory_client.directory_path}/{dest}"]:
             # start upload
             if os.path.isdir(source):
                 subdir = self.directory_client.get_subdirectory_client(dest)
@@ -87,9 +87,7 @@ class FlowFileStorageClient(FileStorageClient):
             else:
                 self.upload_file(source, dest=dest, msg=msg, show_progress=show_progress)
 
-        artifact_info = {"remote path": dest, "name": name, "version": version}
-
-        return artifact_info
+        return {"remote path": dest, "name": name, "version": version}
 
     def upload_file(
         self,
@@ -127,17 +125,16 @@ class FlowFileStorageClient(FileStorageClient):
                         data=data,
                         validate_content=validate_content,
                     )
+            elif show_progress:
+                with FileUploadProgressBar(msg=msg) as progress_bar:
+                    self.directory_client.upload_file(
+                        file_name=dest,
+                        data=data,
+                        validate_content=validate_content,
+                        raw_response_hook=progress_bar.update_to,
+                    )
             else:
-                if show_progress:
-                    with FileUploadProgressBar(msg=msg) as progress_bar:
-                        self.directory_client.upload_file(
-                            file_name=dest,
-                            data=data,
-                            validate_content=validate_content,
-                            raw_response_hook=progress_bar.update_to,
-                        )
-                else:
-                    self.directory_client.upload_file(file_name=dest, data=data, validate_content=validate_content)
+                self.directory_client.upload_file(file_name=dest, data=data, validate_content=validate_content)
         self.uploaded_file_count = self.uploaded_file_count + 1
 
     def upload_dir(
@@ -152,7 +149,7 @@ class FlowFileStorageClient(FileStorageClient):
         subdir = self.directory_client.create_subdirectory(dest)
 
         source_path = Path(source).resolve()
-        prefix = dest + "/"
+        prefix = f"{dest}/"
 
         upload_paths = get_upload_files_from_folder(
             path=source_path,

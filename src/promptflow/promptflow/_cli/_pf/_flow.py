@@ -306,7 +306,7 @@ def _init_flow_by_template(flow_name, flow_type, overwrite=False):
         )
     else:
         flow_test_args = f"--input {os.path.join(flow_name, 'data.jsonl')}"
-    flow_test_command = f"pf flow test --flow {flow_name} " + flow_test_args
+    flow_test_command = f"pf flow test --flow {flow_name} {flow_test_args}"
     print(f"You can execute this command to test the flow, {flow_test_command}")
 
 

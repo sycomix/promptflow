@@ -23,9 +23,6 @@ class ConnectionManager:
 
     def __init__(self, _dict: Dict[str, dict] = None):
         if _dict is None and PROMPTFLOW_CONNECTIONS in os.environ:
-            # !!! Important !!!: Do not leverage this environment variable in any production code, this is test only.
-            if PROMPTFLOW_CONNECTIONS not in os.environ:
-                raise ValueError(f"Required environment variable {PROMPTFLOW_CONNECTIONS!r} not set.")
             connection_path = Path(os.environ[PROMPTFLOW_CONNECTIONS]).resolve().absolute()
             if not connection_path.exists():
                 raise ValueError(f"Connection file not exists. Path {connection_path.as_posix()}.")
@@ -69,7 +66,7 @@ class ConnectionManager:
                     connection_value = connection_class(**{k: v for k, v in value.items() if k in cls_fields})
                     secret_keys = [f.name for f in cls_fields.values() if f.type == Secret]
                 else:
-                    connection_value = connection_class(**{k: v for k, v in value.items()})
+                    connection_value = connection_class(**dict(value.items()))
                     secrets = getattr(connection_value, "secrets", {})
                     secret_keys = list(secrets.keys()) if isinstance(secrets, dict) else []
             # Set secret keys for log scrubbing
@@ -108,9 +105,8 @@ class ConnectionManager:
     def import_requisites(cls, _dict: Dict[str, dict]):
         """Import connection required modules."""
         modules = set()
-        for key, connection_dict in _dict.items():
-            module = connection_dict.get("module")
-            if module:
+        for connection_dict in _dict.values():
+            if module := connection_dict.get("module"):
                 modules.add(module)
         for module in modules:
             # Suppress import error, as we have legacy module promptflow.tools.connections.

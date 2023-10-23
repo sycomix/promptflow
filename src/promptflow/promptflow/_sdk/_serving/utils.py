@@ -29,7 +29,7 @@ def load_request_data(flow, raw_data, logger):
                 "please use json request data instead."
             )
             raise JsonPayloadRequiredForMultipleInputFields(message, target=ErrorTarget.SERVING_APP)
-        if isinstance(raw_data, bytes) or isinstance(raw_data, bytearray):
+        if isinstance(raw_data, (bytes, bytearray)):
             input = str(raw_data, "UTF-8")
         elif isinstance(raw_data, str):
             input = raw_data
@@ -43,8 +43,7 @@ def validate_request_data(flow, data):
     """Validate required request data is provided."""
     # TODO: Note that we don't have default flow input presently, all of the default is None.
     required_inputs = [k for k, v in flow.inputs.items() if v.default is None]
-    missing_inputs = [k for k in required_inputs if k not in data]
-    if missing_inputs:
+    if missing_inputs := [k for k in required_inputs if k not in data]:
         raise MissingRequiredFlowInput(
             f"Required input fields {missing_inputs} are missing in request data {data!r}",
             target=ErrorTarget.SERVING_APP,
@@ -70,8 +69,9 @@ def get_sample_json(project_path, logger):
 # get evaluation only fields
 def get_output_fields_to_remove(flow: FlowContract, logger) -> list:
     """get output fields to remove."""
-    included_outputs = os.getenv("PROMPTFLOW_RESPONSE_INCLUDED_FIELDS", None)
-    if included_outputs:
+    if included_outputs := os.getenv(
+        "PROMPTFLOW_RESPONSE_INCLUDED_FIELDS", None
+    ):
         logger.info(f"Response included fields: {included_outputs}")
         res = json.loads(included_outputs)
         return [k for k, v in flow.outputs.items() if k not in res]
@@ -83,11 +83,5 @@ def handle_error_to_response(e, logger):
     logger.error(f"Promptflow serving app error: {presenter.to_dict()}")
     logger.error(f"Promptflow serving error traceback: {presenter.formatted_traceback}")
     resp = ErrorResponse(presenter.to_dict())
-    response_code = resp.response_code
-    # The http response code for NotAcceptable is 406.
-    # Currently the error framework does not allow response code overriding,
-    # we add a check here to override the response code.
-    # TODO: Consider how to embed this logic into the error framework.
-    if isinstance(e, NotAcceptable):
-        response_code = 406
+    response_code = 406 if isinstance(e, NotAcceptable) else resp.response_code
     return jsonify(resp.to_simplified_dict()), response_code

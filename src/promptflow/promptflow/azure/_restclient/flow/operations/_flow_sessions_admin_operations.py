@@ -163,10 +163,7 @@ class FlowSessionsAdminOperations(object):
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     create_flow_session.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowSessionsAdmin/{sessionId}'}  # type: ignore
 

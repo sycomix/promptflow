@@ -4,23 +4,14 @@ from promptflow import tool
 @tool
 def line_process(groundtruth: str, prediction: str) -> int:
 
-    processed_result = 0
-
     if prediction == "JSONDecodeError" or prediction.startswith("Unknown Error:"):
-        processed_result = -1
-        return processed_result
-
+        return -1
     try:
         groundtruth = float(groundtruth)
         prediction = float(prediction)
     except ValueError:
-        processed_result = -1
-        return processed_result
-
-    if round(prediction, 2) == round(groundtruth, 2):
-        processed_result = 1
-
-    return processed_result
+        return -1
+    return 1 if round(prediction, 2) == round(groundtruth, 2) else 0
 
 
 if __name__ == "__main__":

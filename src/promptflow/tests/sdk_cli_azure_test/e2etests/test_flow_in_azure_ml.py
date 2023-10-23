@@ -26,12 +26,11 @@ def assert_dict_equals_with_skip_fields(item1, item2, skip_fields):
 
 def normalize_arm_id(origin_value: str):
     if origin_value:
-        m = re.match(
+        if m := re.match(
             r"(.*)/subscriptions/[a-z0-9\-]+/resourceGroups/[a-z0-9\-]+/providers/"
             r"Microsoft.MachineLearningServices/workspaces/[a-z0-9\-]+/([a-z]+)/[^/]+/versions/([a-z0-9\-]+)",
             origin_value,
-        )
-        if m:
+        ):
             prefix, asset_type, _ = m.groups()
             return (
                 f"{prefix}/subscriptions/xxx/resourceGroups/xxx/providers/"
@@ -50,8 +49,7 @@ def update_saved_spec(component: Component, saved_spec_path: str):
             yaml_content["creation_context"][key] = "xxx"
 
     for key in ["task.code", "task.environment", "id"]:
-        target_value = normalize_arm_id(pydash.get(yaml_content, key))
-        if target_value:
+        if target_value := normalize_arm_id(pydash.get(yaml_content, key)):
             pydash.set_(yaml_content, key, target_value)
     yaml_text = yaml.dump(yaml_content)
 
@@ -132,7 +130,9 @@ class TestFlowInAzureML:
         update_saved_spec(flow_func, f"./tests/test_configs/flows/saved_component_spec/{request.node.callspec.id}.yaml")
 
         component_dict = flow_func._to_dict()
-        slimmed_created_component_attrs = {key: pydash.get(component_dict, key) for key in expected_spec_attrs.keys()}
+        slimmed_created_component_attrs = {
+            key: pydash.get(component_dict, key) for key in expected_spec_attrs
+        }
         assert slimmed_created_component_attrs == expected_spec_attrs
 
     def test_flow_as_component_in_dsl_pipeline(

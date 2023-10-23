@@ -115,16 +115,15 @@ class TestSubmitter:
                 if name in inputs:
                     flow_inputs[name] = inputs.pop(name)
                     merged_inputs[name] = flow_inputs[name]
-                else:
-                    if value.default is None:
-                        # When the flow is a chat flow and chat_history has no default value, set an empty list for it
-                        if chat_history_name and name == chat_history_name:
-                            flow_inputs[name] = []
-                        else:
-                            missing_inputs.append(name)
+                elif value.default is None:
+                    # When the flow is a chat flow and chat_history has no default value, set an empty list for it
+                    if chat_history_name and name == chat_history_name:
+                        flow_inputs[name] = []
                     else:
-                        flow_inputs[name] = value.default
-                        merged_inputs[name] = flow_inputs[name]
+                        missing_inputs.append(name)
+                else:
+                    flow_inputs[name] = value.default
+                    merged_inputs[name] = flow_inputs[name]
         prefix = node_name or "flow"
         if missing_inputs:
             raise UserErrorException(f'Required input(s) {missing_inputs} are missing for "{prefix}".')
@@ -170,8 +169,9 @@ class TestSubmitter:
             if isinstance(line_result.output, dict):
                 # Remove line_number from output
                 line_result.output.pop(LINE_NUMBER_KEY, None)
-                generator_outputs = self._get_generator_outputs(line_result.output)
-                if generator_outputs:
+                if generator_outputs := self._get_generator_outputs(
+                    line_result.output
+                ):
                     logger.info(f"Some streaming outputs in the result, {generator_outputs.keys()}")
             return line_result
 
@@ -191,7 +191,7 @@ class TestSubmitter:
         SubmitterHelper.init_env(environment_variables=environment_variables)
 
         with LoggerOperations(file_path=self.flow.code / PROMPT_FLOW_DIR_NAME / f"{node_name}.node.log", stream=stream):
-            result = FlowExecutor.load_and_exec_node(
+            return FlowExecutor.load_and_exec_node(
                 self.flow.path,
                 node_name,
                 flow_inputs=flow_inputs,
@@ -199,7 +199,6 @@ class TestSubmitter:
                 connections=connections,
                 working_dir=self.flow.code,
             )
-            return result
 
     def _chat_flow(self, inputs, chat_history_name, environment_variables: dict = None, show_step_output=False):
         """
@@ -321,7 +320,7 @@ class TestSubmitter:
             print(f"{Fore.YELLOW}Bot: ", end="")
             print_chat_output(flow_result.output[output_name])
             flow_result = resolve_generator(flow_result)
-            flow_outputs = {k: v for k, v in flow_result.output.items()}
+            flow_outputs = dict(flow_result.output.items())
             history = {"inputs": {input_name: input_value}, "outputs": flow_outputs}
             chat_history.append(history)
             self._dump_result(flow_folder=self._origin_flow.code, flow_result=flow_result, prefix="chat")

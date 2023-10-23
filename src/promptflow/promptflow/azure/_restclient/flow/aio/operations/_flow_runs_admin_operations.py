@@ -74,7 +74,7 @@ class FlowRunsAdminOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_submit_bulk_run_async_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -96,10 +96,7 @@ class FlowRunsAdminOperations:
 
         deserialized = self._deserialize('FlowRunResult', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     submit_bulk_run_async.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRunsAdmin/{flowId}/bulkRuns/{bulkRunId}/submit'}  # type: ignore
 
@@ -137,7 +134,7 @@ class FlowRunsAdminOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_send_policy_validation_async_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -159,10 +156,7 @@ class FlowRunsAdminOperations:
 
         deserialized = self._deserialize('PolicyValidationResponse', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     send_policy_validation_async.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRunsAdmin/{flowId}/bulkRuns/{bulkRunId}/policy'}  # type: ignore
 
@@ -200,7 +194,7 @@ class FlowRunsAdminOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_check_policy_validation_async_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -222,10 +216,7 @@ class FlowRunsAdminOperations:
 
         deserialized = self._deserialize('PolicyValidationResponse', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     check_policy_validation_async.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRunsAdmin/{flowId}/bulkRuns/{bulkRunId}/policy'}  # type: ignore
 
@@ -263,7 +254,7 @@ class FlowRunsAdminOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_log_result_for_bulk_run_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -285,10 +276,7 @@ class FlowRunsAdminOperations:
 
         deserialized = self._deserialize('[KeyValuePairStringObject]', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     log_result_for_bulk_run.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRunsAdmin/{flowId}/bulkRuns/{bulkRunId}/LogResult'}  # type: ignore
 
@@ -320,7 +308,7 @@ class FlowRunsAdminOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_storage_info_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -340,10 +328,7 @@ class FlowRunsAdminOperations:
 
         deserialized = self._deserialize('StorageInfo', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_storage_info.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRunsAdmin/storageInfo'}  # type: ignore
 
@@ -384,7 +369,7 @@ class FlowRunsAdminOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_log_flow_run_event_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -407,10 +392,7 @@ class FlowRunsAdminOperations:
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     log_flow_run_event.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRunsAdmin/{flowId}/flowRuns/{flowRunId}/runtime/{runtimeVersion}/logEvent'}  # type: ignore
 
@@ -451,7 +433,7 @@ class FlowRunsAdminOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_log_flow_run_event_v2_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -474,10 +456,7 @@ class FlowRunsAdminOperations:
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     log_flow_run_event_v2.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRunsAdmin/{flowId}/flowRuns/{flowRunId}/logEvent'}  # type: ignore
 
@@ -548,10 +527,7 @@ class FlowRunsAdminOperations:
 
         deserialized = self._deserialize('Task', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     update_service_logs.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRunsAdmin/{flowId}/bulkRuns/{bulkRunId}/serviceLogs'}  # type: ignore
 
@@ -622,10 +598,7 @@ class FlowRunsAdminOperations:
 
         deserialized = self._deserialize('Task', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     batch_update_service_logs.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRunsAdmin/{flowId}/bulkRuns/{bulkRunId}/serviceLogs/batch'}  # type: ignore
 

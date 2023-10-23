@@ -126,13 +126,16 @@ class GPT2ContentFormatter(ContentFormatterBase):
     """Content handler for LLMs from the OSS catalog."""
 
     def format_request_payload(self, prompt: str, model_kwargs: Dict) -> str:
-        input_str = json.dumps(
+        return json.dumps(
             {
-                "inputs": {"input_string": [ContentFormatterBase.escape_special_characters(prompt)]},
+                "inputs": {
+                    "input_string": [
+                        ContentFormatterBase.escape_special_characters(prompt)
+                    ]
+                },
                 "parameters": model_kwargs,
             }
         )
-        return input_str
 
     def format_response_payload(self, output: bytes) -> str:
         return format_generic_response_payload(output, response_key="0")
@@ -142,13 +145,12 @@ class HFContentFormatter(ContentFormatterBase):
     """Content handler for LLMs from the HuggingFace catalog."""
 
     def format_request_payload(self, prompt: str, model_kwargs: Dict) -> str:
-        input_str = json.dumps(
+        return json.dumps(
             {
                 "inputs": [ContentFormatterBase.escape_special_characters(prompt)],
                 "parameters": model_kwargs,
             }
         )
-        return input_str
 
     def format_response_payload(self, output: bytes) -> str:
         return format_generic_response_payload(output, response_key="generated_text")
@@ -158,13 +160,16 @@ class DollyContentFormatter(ContentFormatterBase):
     """Content handler for the Dolly-v2-12b model"""
 
     def format_request_payload(self, prompt: str, model_kwargs: Dict) -> str:
-        input_str = json.dumps(
+        return json.dumps(
             {
-                "input_data": {"input_string": [ContentFormatterBase.escape_special_characters(prompt)]},
+                "input_data": {
+                    "input_string": [
+                        ContentFormatterBase.escape_special_characters(prompt)
+                    ]
+                },
                 "parameters": model_kwargs,
             }
         )
-        return input_str
 
     def format_response_payload(self, output: bytes) -> str:
         return format_generic_response_payload(output, response_key=None)
@@ -245,16 +250,14 @@ class LlamaContentFormatter(ContentFormatterBase):
 class ContentFormatterFactory:
     """Factory class for supported models"""
 
-    def get_content_formatter(
-        model_family: ModelFamily, api: API, chat_history: Optional[List[Dict]] = []
-    ) -> ContentFormatterBase:
-        if model_family == ModelFamily.LLAMA:
+    def get_content_formatter(self, api: API, chat_history: Optional[List[Dict]] = []) -> ContentFormatterBase:
+        if self == ModelFamily.LLAMA:
             return LlamaContentFormatter(chat_history=chat_history, api=api)
-        elif model_family == ModelFamily.DOLLY:
+        elif self == ModelFamily.DOLLY:
             return DollyContentFormatter()
-        elif model_family == ModelFamily.GPT2:
+        elif self == ModelFamily.GPT2:
             return GPT2ContentFormatter()
-        elif model_family == ModelFamily.FALCON:
+        elif self == ModelFamily.FALCON:
             return HFContentFormatter()
 
 
@@ -317,7 +320,10 @@ class AzureMLOnlineEndpoint:
     def _call_endpoint(self, body: bytes) -> bytes:
         """call."""
 
-        headers = {"Content-Type": "application/json", "Authorization": ("Bearer " + self.endpoint_api_key)}
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.endpoint_api_key}",
+        }
 
         # If this is not set it'll use the default deployment on the endpoint.
         if self.deployment_name is not None:
@@ -325,8 +331,7 @@ class AzureMLOnlineEndpoint:
 
         req = urllib.request.Request(self.endpoint_url, body, headers)
         response = urllib.request.urlopen(req, timeout=50)
-        result = response.read()
-        return result
+        return response.read()
 
     def __call__(
         self,
@@ -347,8 +352,7 @@ class AzureMLOnlineEndpoint:
         body = self.content_formatter.format_request_payload(prompt, _model_kwargs)
         endpoint_request = str.encode(body)
         endpoint_response = self._call_endpoint(endpoint_request)
-        response = self.content_formatter.format_response_payload(endpoint_response)
-        return response
+        return self.content_formatter.format_response_payload(endpoint_response)
 
 
 class OpenSourceLLM(ToolProvider):
@@ -361,14 +365,14 @@ class OpenSourceLLM(ToolProvider):
         conn_dict = dict(connection)
         for key in self.REQUIRED_CONFIG_KEYS:
             if key not in conn_dict:
-                accepted_keys = ",".join([key for key in self.REQUIRED_CONFIG_KEYS])
+                accepted_keys = ",".join(list(self.REQUIRED_CONFIG_KEYS))
                 raise OpenSourceLLMKeyValidationError(
                     message=f"""Required key `{key}` not found in given custom connection.
 Required keys are: {accepted_keys}."""
                 )
         for key in self.REQUIRED_SECRET_KEYS:
             if key not in conn_dict:
-                accepted_keys = ",".join([key for key in self.REQUIRED_SECRET_KEYS])
+                accepted_keys = ",".join(list(self.REQUIRED_SECRET_KEYS))
                 raise OpenSourceLLMKeyValidationError(
                     message=f"""Required secret key `{key}` not found in given custom connection.
 Required keys are: {accepted_keys}."""

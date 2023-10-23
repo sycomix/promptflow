@@ -621,10 +621,10 @@ class TestFlowRun:
         assert (Path(run_output_path) / "flow_outputs" / "output.jsonl").is_file()
         assert (Path(run_output_path) / "flow_artifacts").is_dir()
         # 3 line runs for webClassification3.jsonl
-        assert len([_ for _ in (Path(run_output_path) / "flow_artifacts").iterdir()]) == 3
+        assert len(list((Path(run_output_path) / "flow_artifacts").iterdir())) == 3
         assert (Path(run_output_path) / "node_artifacts").is_dir()
         # 5 nodes web classification flow DAG
-        assert len([_ for _ in (Path(run_output_path) / "node_artifacts").iterdir()]) == 5
+        assert len(list((Path(run_output_path) / "node_artifacts").iterdir())) == 5
 
     def test_run_snapshot_with_flow_tools_json(self, local_client, pf) -> None:
         run = create_run_against_multi_line_data(pf)
@@ -669,9 +669,9 @@ class TestFlowRun:
         logs = local_storage.logger.get_logs()
         # For Batch run, the executor uses bulk logger to print logs, and only prints the error log of the nodes.
         existing_keywords = ["execution", "execution.bulk", "WARNING", "error log"]
-        assert all([keyword in logs for keyword in existing_keywords])
+        assert all(keyword in logs for keyword in existing_keywords)
         non_existing_keywords = ["execution.flow", "user log"]
-        assert all([keyword not in logs for keyword in non_existing_keywords])
+        assert all(keyword not in logs for keyword in non_existing_keywords)
 
     def test_get_detail_against_partial_fail_run(self, pf: PFClient) -> None:
         run = pf.run(

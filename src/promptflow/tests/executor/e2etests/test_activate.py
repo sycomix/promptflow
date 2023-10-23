@@ -46,7 +46,9 @@ class TestExecutorActivate:
             "The node 'third_node' referenced by the output has been bypassed. "
             "Please refrain from using bypassed nodes as output sources."
         )
-        assert str(e.value) == error_message, "Expected: {}, Actual: {}".format(error_message, str(e.value))
+        assert (
+            str(e.value) == error_message
+        ), f"Expected: {error_message}, Actual: {str(e.value)}"
 
     def assert_activate_bulk_run_result(self, result: BulkResult, expected_result, expected_status_summary):
         # Validate the flow outputs
@@ -77,9 +79,11 @@ class TestExecutorActivate:
         completed_nodes_run_infos = [
             run_info for i, run_info in result.node_run_infos.items() if i not in expected_bypassed_nodes
         ]
-        assert all([node.status == Status.Completed for node in completed_nodes_run_infos])
+        assert all(
+            node.status == Status.Completed for node in completed_nodes_run_infos
+        )
 
         # Validate the flow node run infos for the bypassed nodes
         bypassed_nodes_run_infos = [result.node_run_infos[i] for i in expected_bypassed_nodes]
-        assert all([node.status == Status.Bypassed for node in bypassed_nodes_run_infos])
-        assert all([node.output is None for node in bypassed_nodes_run_infos])
+        assert all(node.status == Status.Bypassed for node in bypassed_nodes_run_infos)
+        assert all(node.output is None for node in bypassed_nodes_run_infos)

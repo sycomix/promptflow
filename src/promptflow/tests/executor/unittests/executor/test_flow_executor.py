@@ -49,7 +49,7 @@ class TestFlowExecutor:
     )
     def test_apply_inputs_mapping(self, inputs, inputs_mapping, expected):
         result = FlowExecutor.apply_inputs_mapping(inputs, inputs_mapping)
-        assert expected == result, "Expected: {}, Actual: {}".format(expected, result)
+        assert expected == result, f"Expected: {expected}, Actual: {result}"
 
     @pytest.mark.parametrize(
         "inputs, inputs_mapping, error_code, error_message",
@@ -71,7 +71,9 @@ class TestFlowExecutor:
     def test_apply_inputs_mapping_error(self, inputs, inputs_mapping, error_code, error_message):
         with pytest.raises(error_code) as e:
             FlowExecutor.apply_inputs_mapping(inputs, inputs_mapping)
-        assert error_message in str(e.value), "Expected: {}, Actual: {}".format(error_message, str(e.value))
+        assert error_message in str(
+            e.value
+        ), f"Expected: {error_message}, Actual: {str(e.value)}"
 
     @pytest.mark.parametrize(
         "inputs, expected",
@@ -114,7 +116,7 @@ class TestFlowExecutor:
     def test_merge_input_dicts_by_line(self, inputs, expected):
         result = FlowExecutor._merge_input_dicts_by_line(inputs)
         json.dumps(result)
-        assert expected == result, "Expected: {}, Actual: {}".format(expected, result)
+        assert expected == result, f"Expected: {expected}, Actual: {result}"
 
     @pytest.mark.parametrize(
         "inputs, error_code, error_message",
@@ -143,7 +145,9 @@ class TestFlowExecutor:
     def test_merge_input_dicts_by_line_error(self, inputs, error_code, error_message):
         with pytest.raises(error_code) as e:
             FlowExecutor._merge_input_dicts_by_line(inputs)
-        assert error_message == str(e.value), "Expected: {}, Actual: {}".format(error_message, str(e.value))
+        assert error_message == str(
+            e.value
+        ), f"Expected: {error_message}, Actual: {str(e.value)}"
 
     @pytest.mark.parametrize("inputs_mapping", [{"question": "${data.question}"}, {}])
     def test_complete_inputs_mapping_by_default_value(self, inputs_mapping):
@@ -249,7 +253,7 @@ class TestFlowExecutor:
             loaded_tools=None,
         )
         result = flow_executor.validate_and_apply_inputs_mapping(inputs, inputs_mapping)
-        assert expected == result, "Expected: {}, Actual: {}".format(expected, result)
+        assert expected == result, f"Expected: {expected}, Actual: {result}"
 
     def test_validate_and_apply_inputs_mapping_empty_input(self):
         flow = Flow(id="fakeId", name=None, nodes=[], inputs={}, outputs=None, tools=[])
@@ -308,7 +312,9 @@ class TestFlowExecutor:
     def test_inputs_mapping_for_all_lines_error(self, inputs, inputs_mapping, error_code, error_message):
         with pytest.raises(error_code) as e:
             FlowExecutor._apply_inputs_mapping_for_all_lines(inputs, inputs_mapping)
-        assert error_message == str(e.value), "Expected: {}, Actual: {}".format(error_message, str(e.value))
+        assert error_message == str(
+            e.value
+        ), f"Expected: {error_message}, Actual: {str(e.value)}"
 
     @pytest.mark.parametrize(
         "flow_inputs, inputs, expected_inputs",
@@ -479,8 +485,7 @@ class TestEnableStreamForLLMTool:
 
 @tool
 def streaming_tool():
-    for i in range(10):
-        yield i
+    yield from range(10)
 
 
 @tool

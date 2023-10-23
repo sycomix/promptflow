@@ -30,9 +30,9 @@ class FlowValidator:
     @staticmethod
     def _ensure_nodes_order(flow: Flow):
         dependencies = {n.name: set() for n in flow.nodes}
-        aggregation_nodes = set(node.name for node in flow.nodes if node.aggregation)
+        aggregation_nodes = {node.name for node in flow.nodes if node.aggregation}
         for n in flow.nodes:
-            inputs_list = [i for i in n.inputs.values()]
+            inputs_list = list(n.inputs.values())
             if n.skip:
                 if n.aggregation and (
                     (
@@ -214,7 +214,7 @@ class FlowValidator:
             in the `flow` object.
         :rtype: Mapping[str, Any]
         """
-        updated_inputs = {k: v for k, v in inputs.items()}
+        updated_inputs = dict(inputs.items())
         for k, v in flow.inputs.items():
             if k in inputs:
                 updated_inputs[k] = FlowValidator._parse_input_value(k, inputs[k], v.type, idx)

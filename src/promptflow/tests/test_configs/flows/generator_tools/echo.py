@@ -5,5 +5,4 @@ from char_generator import character_generator
 def echo(text):
     """Echo the input string."""
 
-    echo_text = "Echo - " + "".join(character_generator(text))
-    return echo_text
+    return "Echo - " + "".join(character_generator(text))

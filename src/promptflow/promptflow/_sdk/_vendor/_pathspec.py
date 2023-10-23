@@ -216,7 +216,6 @@ class GitWildMatchPattern(RegexPattern):
     __slots__ = ()
 
     @classmethod
-    # pylint: disable=too-many-branches,too-many-statements
     def pattern_to_regex(
         cls,
         pattern: AnyStr,
@@ -307,13 +306,6 @@ class GitWildMatchPattern(RegexPattern):
                 # trailing slash (e.g. dir/).
                 if pattern_segments[0] != "**":
                     pattern_segments.insert(0, "**")
-
-            else:
-                # EDGE CASE: A pattern without a beginning slash ('/') but
-                # contains at least one prepended directory (e.g.
-                # "dir/{pattern}") should not match "**/dir/{pattern}",
-                # according to `git check-ignore` (v2.4.1).
-                pass
 
             if not pattern_segments:
                 # After resolving the edge cases, we end up with no pattern at

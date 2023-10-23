@@ -94,7 +94,9 @@ class TestFlowValidator:
             flow = Flow.deserialize(yaml.safe_load(fin))
         with pytest.raises(InvalidFlowRequest) as e:
             FlowValidator._ensure_nodes_order(flow)
-        assert str(e.value) == error_message, "Expected: {}, Actual: {}".format(error_message, str(e.value))
+        assert (
+            str(e.value) == error_message
+        ), f"Expected: {error_message}, Actual: {str(e.value)}"
 
     @pytest.mark.parametrize(
         "aggregated_flow_inputs, aggregation_inputs, error_message",

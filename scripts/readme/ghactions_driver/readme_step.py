@@ -37,8 +37,7 @@ class Step:
         # virtual method for override
         if Step.Environment is None:
             Step.init_jinja_loader()
-        template = Step.Environment.get_template(step_file_name)
-        return template
+        return Step.Environment.get_template(step_file_name)
 
 
 class AzureLoginStep(Step):
@@ -135,10 +134,12 @@ class CreateEnv(Step):
 
     def get_workflow_step(self) -> str:
         template = Step.get_workflow_template("step_create_env.yml.jinja2")
-        content = template.render(
-            {"step_name": self.workflow_name, "working_dir": ReadmeSteps.working_dir}
+        return template.render(
+            {
+                "step_name": self.workflow_name,
+                "working_dir": ReadmeSteps.working_dir,
+            }
         )
-        return content
 
 
 class CreateAoaiFromEnv(Step):
@@ -148,14 +149,13 @@ class CreateAoaiFromEnv(Step):
 
     def get_workflow_step(self) -> str:
         template = Step.get_workflow_template("step_env_create_aoai.yml.jinja2")
-        content = template.render(
+        return template.render(
             {
                 "step_name": self.workflow_name,
                 "working_dir": ReadmeSteps.working_dir,
                 "connection_name": self.connection_name,
             }
         )
-        return content
 
 
 class CreateRunYaml(Step):
@@ -164,10 +164,12 @@ class CreateRunYaml(Step):
 
     def get_workflow_step(self) -> str:
         template = Step.get_workflow_template("step_create_run_yml.yml.jinja2")
-        content = template.render(
-            {"step_name": self.workflow_name, "working_dir": ReadmeSteps.working_dir}
+        return template.render(
+            {
+                "step_name": self.workflow_name,
+                "working_dir": ReadmeSteps.working_dir,
+            }
         )
-        return content
 
 
 class ReadmeSteps:
@@ -285,20 +287,13 @@ class ReadmeStepsManage:
         if "tutorials" in workflow_name:
             path_filter = f"[ examples/**, .github/workflows/{workflow_name}.yml ]"
         else:
-            if "web_classification" in workflow_name:
-                path_filter = (
-                    f"[ {ReadmeSteps.working_dir}/**, "
-                    + "examples/*requirements.txt, "
-                    + "examples/flows/standard/flow-with-additional-includes/**, "
-                    + "examples/flows/standard/flow-with-symlinks/** ,"
-                    + f".github/workflows/{workflow_name}.yml ]"
-                )
-            else:
-                path_filter = (
-                    f"[ {ReadmeSteps.working_dir}/**, "
-                    + "examples/*requirements.txt, "
-                    + f".github/workflows/{workflow_name}.yml ]"
-                )
+            path_filter = (
+                f"[ {ReadmeSteps.working_dir}/**, examples/*requirements.txt, examples/flows/standard/flow-with-additional-includes/**, examples/flows/standard/flow-with-symlinks/** ,"
+                + f".github/workflows/{workflow_name}.yml ]"
+                if "web_classification" in workflow_name
+                else f"[ {ReadmeSteps.working_dir}/**, examples/*requirements.txt, "
+                + f".github/workflows/{workflow_name}.yml ]"
+            )
         replacements = {
             "steps": ReadmeSteps.step_array,
             "workflow_name": workflow_name,

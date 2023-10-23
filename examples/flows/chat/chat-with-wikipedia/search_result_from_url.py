@@ -24,7 +24,7 @@ def get_page_sentence(page, count: int = 10):
     sentences = []
     for p in paragraphs:
         sentences += p.split(". ")
-    sentences = [s.strip() + "." for s in sentences if s.strip()]
+    sentences = [f"{s.strip()}." for s in sentences if s.strip()]
     # get first `count` number of sentences
     return " ".join(sentences[:count])
 
@@ -60,7 +60,7 @@ def fetch_text_content_from_url(url: str, count: int = 10):
             return (url, "No available content")
 
     except Exception as e:
-        print("Get url failed with error: {}".format(e))
+        print(f"Get url failed with error: {e}")
         return (url, "No available content")
 
 
@@ -70,6 +70,5 @@ def search_result_from_url(url_list: list, count: int = 10):
     partial_func_of_fetch_text_content_from_url = partial(fetch_text_content_from_url, count=count)
     with ThreadPoolExecutor(max_workers=5) as executor:
         futures = executor.map(partial_func_of_fetch_text_content_from_url, url_list)
-        for feature in futures:
-            results.append(feature)
+        results.extend(iter(futures))
     return results

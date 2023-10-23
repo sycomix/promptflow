@@ -14,6 +14,6 @@ class DefaultToolInvoker(ToolInvoker):
         if cur_flow is None:
             return f(*args, **kwargs)  # Do nothing if not in a flow context
         signature = inspect.signature(f)
-        argnames = [arg for arg in signature.parameters]
+        argnames = list(signature.parameters)
         # Try resolve the variable name of prompt parameter.
         return cur_flow.invoke_tool_with_cache(f, argnames, args, kwargs)

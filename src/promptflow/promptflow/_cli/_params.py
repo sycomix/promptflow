@@ -22,20 +22,19 @@ class AppendToDictAction(argparse._AppendAction):  # pylint: disable=protected-a
                 key, value = strip_quotation(item).split("=", 1)
                 kwargs[key] = strip_quotation(value)
             except ValueError:
-                raise Exception("Usage error: {} KEY=VALUE [KEY=VALUE ...]".format(option_string))
+                raise Exception(f"Usage error: {option_string} KEY=VALUE [KEY=VALUE ...]")
         return kwargs
 
 
 class FlowTestInputAction(AppendToDictAction):  # pylint: disable=protected-access
     def get_action(self, values, option_string):  # pylint: disable=no-self-use
-        if len(values) == 1 and "=" not in values[0]:
-            from promptflow._utils.load_data import load_data
-
-            if not values[0].endswith(".jsonl"):
-                raise ValueError("Only support jsonl file as input.")
-            return load_data(local_path=values[0])[0]
-        else:
+        if len(values) != 1 or "=" in values[0]:
             return super().get_action(values, option_string)
+        from promptflow._utils.load_data import load_data
+
+        if not values[0].endswith(".jsonl"):
+            raise ValueError("Only support jsonl file as input.")
+        return load_data(local_path=values[0])[0]
 
 
 def add_param_yes(parser):

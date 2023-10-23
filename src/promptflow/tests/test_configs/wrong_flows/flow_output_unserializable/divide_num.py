@@ -3,7 +3,7 @@ from promptflow import tool
 
 @tool
 def divide_num(num: int):
-    return UnserializableClass(num=(int)(num / 2))
+    return UnserializableClass(num=num // 2)
 
 
 class UnserializableClass:

@@ -1087,7 +1087,7 @@ class TestCli:
         assert update_value in out, f"expected updated value {update_value} not in {out}"
         connection = local_client.connections.get(name)
         # Assert secrets are not scrubbed
-        assert not any(v == SCRUBBED_VALUE for v in connection._secrets.values())
+        assert all(v != SCRUBBED_VALUE for v in connection._secrets.values())
 
     def test_input_with_dict_val(self, pf):
         run_id = str(uuid.uuid4())
@@ -1140,9 +1140,9 @@ class TestCli:
         logs = f.getvalue()
         # For Batch run, the executor uses bulk logger to print logs, and only prints the error log of the nodes.
         existing_keywords = ["execution", "execution.bulk", "WARNING", "error log"]
-        assert all([keyword in logs for keyword in existing_keywords])
+        assert all(keyword in logs for keyword in existing_keywords)
         non_existing_keywords = ["execution.flow", "user log"]
-        assert all([keyword not in logs for keyword in non_existing_keywords])
+        assert all(keyword not in logs for keyword in non_existing_keywords)
 
     def test_pf_run_no_stream_log(self):
         f = io.StringIO()

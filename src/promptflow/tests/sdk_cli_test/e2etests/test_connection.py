@@ -108,11 +108,7 @@ class TestConnection:
         # Test secrets not updated, and configs updated
         assert (
             result.configs[expected_updated_item[0]] == expected_updated_item[1]
-        ), "Assert configs updated failed, expected: {}, actual: {}".format(
-            expected_updated_item[1], result.configs[expected_updated_item[0]]
-        )
+        ), f"Assert configs updated failed, expected: {expected_updated_item[1]}, actual: {result.configs[expected_updated_item[0]]}"
         assert (
             result._secrets[expected_secret_item[0]] == expected_secret_item[1]
-        ), "Assert secrets not updated failed, expected: {}, actual: {}".format(
-            expected_secret_item[1], result._secrets[expected_secret_item[0]]
-        )
+        ), f"Assert secrets not updated failed, expected: {expected_secret_item[1]}, actual: {result._secrets[expected_secret_item[0]]}"

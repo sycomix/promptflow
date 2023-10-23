@@ -405,7 +405,7 @@ class FlowExecutor:
             if node.name in normal_node_names:
                 continue
             for value in node.inputs.values():
-                if not value.value_type == InputValueType.NODE_REFERENCE:
+                if value.value_type != InputValueType.NODE_REFERENCE:
                     continue
                 if value.value in normal_node_names:
                     properties.add(value.serialize())
@@ -425,11 +425,11 @@ class FlowExecutor:
     def _handle_line_failures(self, run_infos: List[FlowRunInfo], raise_on_line_failure: bool = False):
         failed = [i for i, r in enumerate(run_infos) if r.status == Status.Failed]
         failed_msg = None
-        if len(failed) > 0:
+        if failed:
             failed_indexes = ",".join([str(i) for i in failed])
             first_fail_exception = run_infos[failed[0]].error["message"]
             if raise_on_line_failure:
-                failed_msg = "Flow run failed due to the error: " + first_fail_exception
+                failed_msg = f"Flow run failed due to the error: {first_fail_exception}"
                 raise Exception(failed_msg)
 
             failed_msg = (
@@ -447,12 +447,12 @@ class FlowExecutor:
         ]
         has_line_number = len(line_number) > 0
         if not has_line_number:
-            line_number = [i for i in range(nlines)]
+            line_number = list(range(nlines))
 
         # TODO: Such scenario only occurs in legacy scenarios, will be deprecated.
         has_duplicates = len(line_number) != len(set(line_number))
         if has_duplicates:
-            line_number = [i for i in range(nlines)]
+            line_number = list(range(nlines))
 
         result_list = []
 
@@ -835,8 +835,7 @@ class FlowExecutor:
             )
 
         inputs_mapping = self._complete_inputs_mapping_by_default_value(inputs_mapping)
-        resolved_inputs = self._apply_inputs_mapping_for_all_lines(inputs, inputs_mapping)
-        return resolved_inputs
+        return self._apply_inputs_mapping_for_all_lines(inputs, inputs_mapping)
 
     def _complete_inputs_mapping_by_default_value(self, inputs_mapping):
         inputs_mapping = inputs_mapping or {}
@@ -1109,7 +1108,9 @@ class FlowExecutor:
         all_lengths_without_line_number = {
             input_key: len(list_of_one_input)
             for input_key, list_of_one_input in input_dict.items()
-            if not any(LINE_NUMBER_KEY in one_item for one_item in list_of_one_input)
+            if all(
+                LINE_NUMBER_KEY not in one_item for one_item in list_of_one_input
+            )
         }
         if len(set(all_lengths_without_line_number.values())) > 1:
             raise InputMappingError(
@@ -1206,8 +1207,10 @@ class FlowExecutor:
                 )
             )
 
-        result = [FlowExecutor.apply_inputs_mapping(item, inputs_mapping) for item in merged_list]
-        return result
+        return [
+            FlowExecutor.apply_inputs_mapping(item, inputs_mapping)
+            for item in merged_list
+        ]
 
     def enable_streaming_for_llm_flow(self, stream_required: Callable[[], bool]):
         """Enable the LLM node that is connected to output to return streaming results controlled by `stream_required`.

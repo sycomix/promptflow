@@ -116,5 +116,3 @@ class TestNodeLogWriter:
         sys.stdout = run_logger
         with ThreadPool(processes=10) as pool:
             results = pool.starmap(assert_print_result, ((i, run_logger) for i in range(10)))
-            for r in results:
-                pass

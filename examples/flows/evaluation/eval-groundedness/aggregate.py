@@ -16,8 +16,8 @@ def aggregate(groundedness_scores: List[float]):
     aggregated_results = {"groundedness": 0.0, "count": 0}
 
     # Calculate average groundedness score for each variant
-    for i in range(len(groundedness_scores)):
-        aggregated_results["groundedness"] += groundedness_scores[i]
+    for groundedness_score in groundedness_scores:
+        aggregated_results["groundedness"] += groundedness_score
         aggregated_results["count"] += 1
 
     aggregated_results["groundedness"] /= aggregated_results["count"]

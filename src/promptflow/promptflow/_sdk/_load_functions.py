@@ -96,13 +96,13 @@ def _load_env_to_connection(
     if not source.exists():
         raise FileNotFoundError(f"File {source.absolute().as_posix()!r} not found.")
     try:
-        data = dict(dotenv_values(source))
-        if not data:
+        if data := dict(dotenv_values(source)):
+            return CustomConnection(name=name, secrets=data)
+        else:
             # Handle some special case dotenv returns empty with no exception raised.
             raise ValueError(
                 f"Load nothing from dotenv file {source.absolute().as_posix()!r}, "
                 "please make sure the file is not empty and readable."
             )
-        return CustomConnection(name=name, secrets=data)
     except Exception as e:
         raise Exception(f"Load entity error: {e}") from e

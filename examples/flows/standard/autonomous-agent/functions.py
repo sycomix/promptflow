@@ -3,7 +3,7 @@ from promptflow import tool
 
 @tool
 def functions_format() -> list:
-    functions = [
+    return [
         {
             "name": "search",
             "description": """The action will search this entity name on Wikipedia and returns the first {count}
@@ -35,8 +35,8 @@ def functions_format() -> list:
                         "type": "string",
                         "description": "The command you want to execute in python",
                     }
-                  },
-                "required": ["command"]
+                },
+                "required": ["command"],
             },
         },
         {
@@ -49,11 +49,10 @@ def functions_format() -> list:
                     "response": {
                         "type": "string",
                         "description": "final response to let people know you have finished your goals and remember "
-                                       "show your results",
+                        "show your results",
                     },
                 },
                 "required": ["response"],
-             },
+            },
         },
-      ]
-    return functions
+    ]

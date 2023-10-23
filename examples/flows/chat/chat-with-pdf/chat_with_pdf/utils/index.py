@@ -40,11 +40,7 @@ class FAISSIndex:
             vectors.append(vector)
 
         self.index.add(np.array(vectors, dtype=np.float32))
-        self.docs.update(
-            {i: doc for i, doc in enumerate(documents, start=len(self.docs))}
-        )
-
-        pass
+        self.docs.update(dict(enumerate(documents, start=len(self.docs))))
 
     def query(self, text: str, top_k: int = 10) -> List[SearchResultEntity]:
         vector = self.embedding.generate(text)
@@ -64,10 +60,8 @@ class FAISSIndex:
         # dump docs to pickle file
         with open(os.path.join(path, DATA_FILE_NAME), "wb") as f:
             pickle.dump(self.docs, f)
-        pass
 
     def load(self, path: str) -> None:
         self.index = faiss.read_index(os.path.join(path, INDEX_FILE_NAME))
         with open(os.path.join(path, DATA_FILE_NAME), "rb") as f:
             self.docs = pickle.load(f)
-        pass

@@ -225,9 +225,9 @@ class PromptFlowCallbackHandler(BaseCallbackHandler):
         # For version 0.0.197 and earlier, the name is stored in the "name" field,
         # and for later versions, the name is stored in the "id" field.
         # If none exists, return None and use a default name.
-        if "name" in serialized.keys():
+        if "name" in serialized:
             return serialized["name"]
-        elif "id" in serialized.keys() and isinstance(serialized["id"], list):
+        elif "id" in serialized and isinstance(serialized["id"], list):
             return serialized["id"][-1]
         else:
             return None

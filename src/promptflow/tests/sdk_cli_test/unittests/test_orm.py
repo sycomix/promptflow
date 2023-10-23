@@ -111,7 +111,7 @@ class TestSchemaManagement:
         # 1 table
         assert inspect(engine).has_table(TABLENAME)
         # 6 rows
-        entities = [entity for entity in sessionmaker(bind=engine)().query(SchemaV3).all()]
+        entities = list(sessionmaker(bind=engine)().query(SchemaV3).all())
         assert len(entities) == 6
 
     def test_version_upgrade(self) -> None:
@@ -124,7 +124,7 @@ class TestSchemaManagement:
         assert inspect(engine).has_table(f"{TABLENAME}_v1")
         assert inspect(engine).has_table(f"{TABLENAME}_v2")
         # 2 rows in current table
-        entities = [entity for entity in sessionmaker(bind=engine)().query(SchemaV3).all()]
+        entities = list(sessionmaker(bind=engine)().query(SchemaV3).all())
         assert len(entities) == 3
 
     def test_version_downgrade(self, capfd) -> None:
@@ -135,7 +135,7 @@ class TestSchemaManagement:
         # 1 table
         assert inspect(engine).has_table(TABLENAME)
         # 2 rows
-        entities = [entity for entity in sessionmaker(bind=engine)().query(SchemaV1).all()]
+        entities = list(sessionmaker(bind=engine)().query(SchemaV1).all())
         assert len(entities) == 3
         # with warning message
         out, _ = capfd.readouterr()
@@ -152,7 +152,7 @@ class TestSchemaManagement:
         assert inspect(engine).has_table(TABLENAME)
         assert inspect(engine).has_table(f"{TABLENAME}_v2")
         # 12(all) rows in current table
-        entities = [entity for entity in sessionmaker(bind=engine)().query(SchemaV3).all()]
+        entities = list(sessionmaker(bind=engine)().query(SchemaV3).all())
         assert len(entities) == 12
 
     def test_version_across_same_schema_version(self, capfd) -> None:
@@ -184,7 +184,7 @@ class TestSchemaManagement:
         # 2 tables: 1 current and 1 legacy with name containing timestamp
         assert inspect(engine).has_table(TABLENAME)
         # 2 rows in current table
-        entities = [entity for entity in sessionmaker(bind=engine)().query(SchemaV3).all()]
+        entities = list(sessionmaker(bind=engine)().query(SchemaV3).all())
         assert len(entities) == 2
 
 

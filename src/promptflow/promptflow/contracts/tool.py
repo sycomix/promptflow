@@ -64,9 +64,7 @@ class ValueType(str, Enum):
             return ValueType.STRING
         if isinstance(t, list):
             return ValueType.LIST
-        if isinstance(t, FilePath):
-            return ValueType.FILE_PATH
-        return ValueType.OBJECT
+        return ValueType.FILE_PATH if isinstance(t, FilePath) else ValueType.OBJECT
 
     @staticmethod
     def from_type(t: type) -> "ValueType":
@@ -94,9 +92,7 @@ class ValueType(str, Enum):
             return ValueType.PROMPT_TEMPLATE
         if t == FilePath:
             return ValueType.FILE_PATH
-        if t == Image:
-            return ValueType.IMAGE
-        return ValueType.OBJECT
+        return ValueType.IMAGE if t == Image else ValueType.OBJECT
 
     def parse(self, v: Any) -> Any:  # noqa: C901
         """Parse value to the given :class:`~promptflow.contracts.tool.ValueType`.
@@ -153,9 +149,7 @@ class ConnectionType:
         # and connections may not be registered yet.
         from promptflow._core.tools_manager import connections
 
-        if not isinstance(type_name, str):
-            return None
-        return connections.get(type_name)
+        return None if not isinstance(type_name, str) else connections.get(type_name)
 
     @staticmethod
     def is_connection_class_name(type_name: str) -> bool:
@@ -250,8 +244,7 @@ class InputDefinition:
         :rtype: dict
         """
 
-        data = {}
-        data["type"] = ([t.value for t in self.type],)
+        data = {"type": ([t.value for t in self.type], )}
         if len(self.type) == 1:
             data["type"] = self.type[0].value
         if self.default:
@@ -381,7 +374,7 @@ class Tool:
         """
 
         data = asdict(self, dict_factory=lambda x: {k: v for (k, v) in x if v is not None and k != "outputs"})
-        if not self.type == ToolType._ACTION:
+        if self.type != ToolType._ACTION:
             return data
         # Pop unused field for action
         skipped_fields = ["type", "inputs", "outputs"]

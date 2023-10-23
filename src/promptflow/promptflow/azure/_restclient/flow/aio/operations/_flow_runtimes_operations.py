@@ -115,10 +115,7 @@ class FlowRuntimesOperations:
 
         deserialized = self._deserialize('FlowRuntimeDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     create_runtime.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRuntimes/{runtimeName}'}  # type: ignore
 
@@ -197,10 +194,7 @@ class FlowRuntimesOperations:
 
         deserialized = self._deserialize('FlowRuntimeDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     update_runtime.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRuntimes/{runtimeName}'}  # type: ignore
 
@@ -235,7 +229,7 @@ class FlowRuntimesOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_runtime_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -256,10 +250,7 @@ class FlowRuntimesOperations:
 
         deserialized = self._deserialize('FlowRuntimeDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_runtime.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRuntimes/{runtimeName}'}  # type: ignore
 
@@ -300,7 +291,7 @@ class FlowRuntimesOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_delete_runtime_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -323,10 +314,7 @@ class FlowRuntimesOperations:
 
         deserialized = self._deserialize('FlowRuntimeDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     delete_runtime.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRuntimes/{runtimeName}'}  # type: ignore
 
@@ -364,7 +352,7 @@ class FlowRuntimesOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_check_ci_availability_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -386,10 +374,7 @@ class FlowRuntimesOperations:
 
         deserialized = self._deserialize('AvailabilityResponse', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     check_ci_availability.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRuntimes/checkCiAvailability'}  # type: ignore
 
@@ -427,7 +412,7 @@ class FlowRuntimesOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_check_mir_availability_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -449,10 +434,7 @@ class FlowRuntimesOperations:
 
         deserialized = self._deserialize('AvailabilityResponse', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     check_mir_availability.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRuntimes/checkMirAvailability'}  # type: ignore
 
@@ -487,7 +469,7 @@ class FlowRuntimesOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_check_runtime_upgrade_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -508,10 +490,7 @@ class FlowRuntimesOperations:
 
         deserialized = self._deserialize('bool', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     check_runtime_upgrade.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRuntimes/{runtimeName}/needUpgrade'}  # type: ignore
 
@@ -543,7 +522,7 @@ class FlowRuntimesOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_list_runtimes_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -563,10 +542,7 @@ class FlowRuntimesOperations:
 
         deserialized = self._deserialize('[FlowRuntimeDto]', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     list_runtimes.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowRuntimes'}  # type: ignore
 

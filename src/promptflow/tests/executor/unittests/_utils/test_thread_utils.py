@@ -20,8 +20,8 @@ class TestRepeatLogTimer:
         s = StringIO()
         logger = Logger("test_repeat_log_timer")
         logger.addHandler(StreamHandler(s))
-        interval_seconds = 1
         start_time = time.perf_counter()
+        interval_seconds = 1
         with RepeatLogTimer(
             interval_seconds=interval_seconds,
             logger=logger,
@@ -34,7 +34,5 @@ class TestRepeatLogTimer:
         for i in range(1, 10):
             assert (
                 logs[i - 1]
-                == f"Test has been running for {i} seconds, "
-                + "thread None cannot be found in sys._current_frames, "
-                + "maybe it has been terminated due to unexpected errors."
+                == f"Test has been running for {i} seconds, thread None cannot be found in sys._current_frames, maybe it has been terminated due to unexpected errors."
             )

@@ -7,8 +7,7 @@ from my_tool_package.tools.tool_with_file_path_input import my_tool
 
 @pytest.fixture
 def my_file_path_input() -> FilePath:
-    my_file_path_input = FilePath(".\\test_utils\\hello_method.py")
-    return my_file_path_input
+    return FilePath(".\\test_utils\\hello_method.py")
 
 
 class TestToolWithFilePathInput:

@@ -93,9 +93,7 @@ def generate_prompt_meta_dict(name, content, prompt_only=False, source=None):
 def is_tool(f):
     if not isinstance(f, types.FunctionType):
         return False
-    if not hasattr(f, "__tool"):
-        return False
-    return True
+    return bool(hasattr(f, "__tool"))
 
 
 def collect_tool_functions_in_module(m):
@@ -114,9 +112,11 @@ def collect_tool_methods_in_module(m):
     tools = []
     for _, obj in inspect.getmembers(m):
         if isinstance(obj, type) and issubclass(obj, ToolProvider) and obj.__module__ == m.__name__:
-            for _, method in inspect.getmembers(obj):
-                if is_tool(method):
-                    tools.append(method)
+            tools.extend(
+                method
+                for _, method in inspect.getmembers(obj)
+                if is_tool(method)
+            )
     return tools
 
 
@@ -342,9 +342,7 @@ class PythonLoadError(PythonParsingError):
             tb = get_tb_next(tb, next_cnt=3)
             if tb is not None:
                 te = TracebackException(type(exc), exc, tb)
-                formatted_tb = "".join(te.format())
-
-                return formatted_tb
+                return "".join(te.format())
         return None
 
     @property

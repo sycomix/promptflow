@@ -91,9 +91,7 @@ class ArmConnectionOperations(_ScopeDependentOperations):
                 reason=response.reason,
             )
         data = response.json()
-        if model:
-            return model.deserialize(data)
-        return data
+        return model.deserialize(data) if model else data
 
     @classmethod
     def validate_and_fallback_connection_type(cls, name, type_name, category):

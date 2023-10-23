@@ -11,14 +11,11 @@ class PromptLimitException(Exception):
         self._inner_exception = kwargs.get("error")
         self.exc_type, self.exc_value, self.exc_traceback = sys.exc_info()
         self.exc_type = self.exc_type.__name__ if self.exc_type else type(self._inner_exception)
-        self.exc_msg = "{}, {}: {}".format(message, self.exc_type, self.exc_value)
+        self.exc_msg = f"{message}, {self.exc_type}: {self.exc_value}"
 
     @property
     def message(self):
-        if self._message:
-            return self._message
-
-        return self.__class__.__name__
+        return self._message if self._message else self.__class__.__name__
 
 
 def docstring_prompt(last_code: str = '', code: str = '', module: str = '') -> str:

@@ -103,10 +103,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     create_flow.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows'}  # type: ignore
 
@@ -150,7 +147,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_list_flows_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -174,10 +171,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('[FlowBaseDto]', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     list_flows.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows'}  # type: ignore
 
@@ -248,10 +242,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     clone_flow.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/clone'}  # type: ignore
 
@@ -318,10 +309,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     create_flow_from_sample.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/fromsample'}  # type: ignore
 
@@ -392,10 +380,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     update_flow.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}'}  # type: ignore
 
@@ -466,10 +451,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     patch_flow.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}'}  # type: ignore
 
@@ -507,7 +489,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_flow_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -529,10 +511,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}'}  # type: ignore
 
@@ -603,10 +582,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowRunResult', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     submit_flow.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/submit'}  # type: ignore
 
@@ -647,7 +623,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_flow_run_status_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -670,10 +646,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowRunResult', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_run_status.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/{flowRunId}/status'}  # type: ignore
 
@@ -714,7 +687,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_flow_run_info_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -737,10 +710,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowRunInfo', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_run_info.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/runs/{flowRunId}'}  # type: ignore
 
@@ -787,7 +757,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_flow_child_runs_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -812,10 +782,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('[object]', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_child_runs.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/runs/{flowRunId}/childRuns'}  # type: ignore
 
@@ -868,7 +835,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_flow_node_runs_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -895,10 +862,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('[object]', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_node_runs.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/runs/{flowRunId}/nodeRuns/{nodeName}'}  # type: ignore
 
@@ -973,10 +937,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     clone_flow_from_flow_run.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/runs/{flowRunId}/clone'}  # type: ignore
 
@@ -1014,7 +975,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_list_bulk_tests_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -1036,10 +997,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('[BulkTestDto]', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     list_bulk_tests.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/bulkTests'}  # type: ignore
 
@@ -1077,7 +1035,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_bulk_test_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -1099,10 +1057,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('BulkTestDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_bulk_test.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/bulkTests/{bulkTestId}'}  # type: ignore
 
@@ -1137,7 +1092,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_samples_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -1158,10 +1113,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('{FlowSampleDto}', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_samples.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/samples'}  # type: ignore
 
@@ -1196,7 +1148,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_evaluate_flow_samples_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -1217,10 +1169,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('{FlowSampleDto}', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_evaluate_flow_samples.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/evaluateSamples'}  # type: ignore
 
@@ -1252,7 +1201,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_flow_deploy_reserved_environment_variable_names_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -1272,10 +1221,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('[str]', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_deploy_reserved_environment_variable_names.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/DeployReservedEnvironmentVariableNames'}  # type: ignore
 
@@ -1346,10 +1292,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     deploy_flow.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/deploy'}  # type: ignore
 
@@ -1387,7 +1330,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_flow_run_log_content_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -1409,10 +1352,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_run_log_content.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/runs/{flowRunId}/logContent'}  # type: ignore
 
@@ -1447,7 +1387,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_cancel_flow_run_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -1468,10 +1408,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     cancel_flow_run.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/runs/{flowRunId}/cancel'}  # type: ignore
 
@@ -1506,7 +1443,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_cancel_bulk_test_run_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -1527,10 +1464,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     cancel_bulk_test_run.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/bulkTests/{bulkTestRunId}/cancel'}  # type: ignore
 
@@ -1593,10 +1527,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowSnapshot', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_snapshot.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/FlowSnapshot'}  # type: ignore
 
@@ -1663,10 +1594,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('[ConnectionOverrideSetting]', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_connection_override_settings.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/connectionOverride'}  # type: ignore
 
@@ -1729,10 +1657,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('{FlowInputDefinition}', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_inputs.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/flowInputs'}  # type: ignore
 
@@ -1795,10 +1720,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('str', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     load_as_component.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/LoadAsComponent'}  # type: ignore
 
@@ -1839,7 +1761,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_flow_tools_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -1862,10 +1784,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowToolsDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_tools.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/flowTools'}  # type: ignore
 
@@ -1940,10 +1859,7 @@ class FlowsOperations:
         if response.status_code == 202:
             deserialized = self._deserialize('object', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     setup_flow_session.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/sessions'}  # type: ignore
 
@@ -1981,7 +1897,7 @@ class FlowsOperations:
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_get_flow_session_status_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -2003,10 +1919,7 @@ class FlowsOperations:
 
         deserialized = self._deserialize('FlowSessionDto', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     get_flow_session_status.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/Flows/{flowId}/sessions/status'}  # type: ignore
 

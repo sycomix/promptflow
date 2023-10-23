@@ -32,28 +32,27 @@ def print_blue(message):
 def get_test_files(testpath):
     if os.path.isfile(testpath):
         return [testpath]
-    else:
-        res = []
-        for root, dirs, files in os.walk(testpath):
-            module_logger.debug("Searching %s for files ending in 'tests.py'", root)
-            res.extend([os.path.join(root, file) for file in files if file.endswith("tests.py")])
-        return res
+    res = []
+    for root, dirs, files in os.walk(testpath):
+        module_logger.debug("Searching %s for files ending in 'tests.py'", root)
+        res.extend([os.path.join(root, file) for file in files if file.endswith("tests.py")])
+    return res
 
 
 def retry(fn, num_attempts=3):
     if num_attempts <= 0:
-        raise Exception("Illegal num_attempts: {}".format(num_attempts))
+        raise Exception(f"Illegal num_attempts: {num_attempts}")
     count = 0
     for _ in range(0, num_attempts):
         try:
             return fn()
         except Exception:
             count += 1
-            print("Execution failed on attempt {} out of {}".format(count, num_attempts))
+            print(f"Execution failed on attempt {count} out of {num_attempts}")
             print("Exception trace:")
             traceback.print_exc()
             if count == num_attempts:
-                print("Execution failed after {} attempts".format(count))
+                print(f"Execution failed after {count} attempts")
                 raise
 
 

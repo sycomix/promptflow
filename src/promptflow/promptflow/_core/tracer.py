@@ -48,7 +48,7 @@ class Tracer(ThreadLocalSingleton):
     def push_tool(cls, f, args, kwargs):
         obj = cls.active_instance()
         sig = inspect.signature(f).parameters
-        all_kwargs = {**{k: v for k, v in zip(sig.keys(), args)}, **kwargs}
+        all_kwargs = {**dict(zip(sig.keys(), args)), **kwargs}
         all_kwargs = {
             k: ConnectionType.serialize_conn(v) if ConnectionType.is_connection_value(v) else v
             for k, v in all_kwargs.items()

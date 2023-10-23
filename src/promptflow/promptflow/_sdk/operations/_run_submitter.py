@@ -128,18 +128,22 @@ def overwrite_connections(flow_path: Path, connections: dict, working_dir: PathL
         node = node_name_2_node[node_name]
         executable_node = executable_flow.get_node(node_name=node_name)
         if executable_flow.is_llm_node(executable_node):
-            unsupported_keys = connection_dict.keys() - SUPPORTED_CONNECTION_FIELDS
-            if unsupported_keys:
+            if (
+                unsupported_keys := connection_dict.keys()
+                - SUPPORTED_CONNECTION_FIELDS
+            ):
                 raise InvalidFlowError(
                     f"Unsupported llm connection overwrite keys: {unsupported_keys},"
                     f" only {SUPPORTED_CONNECTION_FIELDS} are supported."
                 )
             try:
-                connection = connection_dict.get(ConnectionFields.CONNECTION)
-                if connection:
+                if connection := connection_dict.get(
+                    ConnectionFields.CONNECTION
+                ):
                     node[ConnectionFields.CONNECTION] = connection
-                deploy_name = connection_dict.get(ConnectionFields.DEPLOYMENT_NAME)
-                if deploy_name:
+                if deploy_name := connection_dict.get(
+                    ConnectionFields.DEPLOYMENT_NAME
+                ):
                     node[INPUTS][ConnectionFields.DEPLOYMENT_NAME] = deploy_name
             except KeyError as e:
                 raise KeyError(f"Failed to overwrite llm node {node_name} with connections {connections}") from e
@@ -181,8 +185,7 @@ def variant_overwrite_context(
             overwrite_variant(Path(temp_dir), tuning_node, variant, drop_node_variants=drop_node_variants)
             overwrite_connections(Path(temp_dir), connections)
             remove_additional_includes(Path(temp_dir))
-            flow = load_flow(temp_dir)
-            yield flow
+            yield load_flow(temp_dir)
     else:
         # Generate a flow, the code path points to the original flow folder,
         # the dag path points to the temp dag file after overwriting variant.
@@ -191,8 +194,7 @@ def variant_overwrite_context(
             shutil.copy2(flow_dag_path.resolve().as_posix(), temp_dag_file)
             overwrite_variant(Path(temp_dir), tuning_node, variant, drop_node_variants=drop_node_variants)
             overwrite_connections(Path(temp_dir), connections, working_dir=flow_dir_path)
-            flow = Flow(code=flow_dir_path, path=temp_dag_file)
-            yield flow
+            yield Flow(code=flow_dir_path, path=temp_dag_file)
 
 
 class SubmitterHelper:
@@ -299,16 +301,16 @@ class RunSubmitter:
         run._dump()  # pylint: disable=protected-access
         try:
             bulk_result = flow_executor.exec_bulk(mapped_inputs, run_id=run_id)
-            # Filter the failed line result
-            failed_line_result = \
-                [result for result in bulk_result.line_results if result.run_info.status == Status.Failed]
-            if failed_line_result:
+            if failed_line_result := [
+                result
+                for result in bulk_result.line_results
+                if result.run_info.status == Status.Failed
+            ]:
                 # Log warning message when there are failed line run in bulk run.
                 error_log = \
-                    f"{len(failed_line_result)} out of {len(bulk_result.line_results)} runs failed in bulk run."
+                        f"{len(failed_line_result)} out of {len(bulk_result.line_results)} runs failed in bulk run."
                 if run.properties.get(FlowRunProperties.OUTPUT_PATH, None):
-                    error_log = error_log + \
-                                f" Please check out {run.properties[FlowRunProperties.OUTPUT_PATH]} for more details."
+                    error_log = f"{error_log} Please check out {run.properties[FlowRunProperties.OUTPUT_PATH]} for more details."
                 logger.warning(error_log)
             # The bulk run is completed if the exec_bulk successfully completed.
             status = Status.Completed.value
@@ -316,11 +318,9 @@ class RunSubmitter:
             # when run failed in executor, store the exception in result and dump to file
             logger.warning(f"Run {run.name} failed when executing in executor.")
             exception = e
-            # for user error, swallow stack trace and return failed run since user don't need the stack trace
-            if not isinstance(e, UserErrorException):
-                # for other errors, raise it to user to help debug root cause.
-                raise e
-            # won't raise the exception since it's already included in run object.
+            if not isinstance(exception, UserErrorException):
+                raise exception
+                # won't raise the exception since it's already included in run object.
         finally:
             # persist snapshot and result
             # snapshot: flow directory and (mapped) inputs
@@ -341,19 +341,18 @@ class RunSubmitter:
             )
 
     def _resolve_data(self, run: Run):
-        result = {}
         input_dicts = {}
         if run.data:
             input_dicts["data"] = run.data
-        for input_key, local_file in input_dicts.items():
-            result[input_key] = load_data(local_file)
+        result = {
+            input_key: load_data(local_file)
+            for input_key, local_file in input_dicts.items()
+        }
         if run.run is not None:
-            referenced_outputs = self.run_operations._get_outputs(run.run)
-            if referenced_outputs:
+            if referenced_outputs := self.run_operations._get_outputs(run.run):
                 variant_output = reverse_transpose(referenced_outputs)
                 result["run.outputs"] = variant_output
-            referenced_inputs = self.run_operations._get_inputs(run.run)
-            if referenced_inputs:
+            if referenced_inputs := self.run_operations._get_inputs(run.run):
                 variant_input = reverse_transpose(referenced_inputs)
                 result["run.inputs"] = variant_input
         return result
@@ -364,11 +363,10 @@ class RunSubmitter:
             return
         if not isinstance(column_mapping, dict):
             raise UserErrorException(f"Column mapping must be a dict, got {type(column_mapping)}.")
-        all_static = True
-        for v in column_mapping.values():
-            if isinstance(v, str) and v.startswith("$"):
-                all_static = False
-                break
+        all_static = not any(
+            isinstance(v, str) and v.startswith("$")
+            for v in column_mapping.values()
+        )
         if all_static:
             raise UserErrorException(
                 "Column mapping must contain at least one mapping binding, "

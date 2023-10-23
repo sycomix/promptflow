@@ -27,11 +27,7 @@ class SerpAPI(ToolProvider):
         self.connection = connection
 
     def extract_error_message_from_json(self, error_data):
-        error_message = ""
-        # For request was rejected. For example, the api_key is not valid
-        if "error" in error_data:
-            error_message = error_data["error"]
-
+        error_message = error_data["error"] if "error" in error_data else ""
         return str(error_message)
 
     def safe_extract_error_message(self, response):
@@ -70,12 +66,8 @@ class SerpAPI(ToolProvider):
             "q": query,
             "location": location,
             "api_key": self.connection.api_key,
+            "engine": engine.value if isinstance(engine, Engine) else engine,
         }
-        if isinstance(engine, Engine):
-            params["engine"] = engine.value
-        else:
-            params["engine"] = engine
-
         if safe == SafeMode.ACTIVE:
             # Ingore invalid value and safe="off" (as default)
             # For bing and google, they use diff parameters
@@ -84,12 +76,11 @@ class SerpAPI(ToolProvider):
             else:
                 params["safeSearch"] = "Strict"
 
-        if int(num) > 0:
-            # to combine multiple engines together, we use "num" as the parameter for such purpose
+        if num > 0:
             if params["engine"].lower() == "google":
-                params["num"] = int(num)
+                params["num"] = num
             else:
-                params["count"] = int(num)
+                params["count"] = num
 
         search = SerpApiClient(params)
 
@@ -99,15 +90,14 @@ class SerpAPI(ToolProvider):
             if response.status_code == requests.codes.ok:
                 # default output is json
                 return json.loads(response.text)
-            else:
-                # Step I: Try to get accurate error message at best
-                error_message = self.safe_extract_error_message(response)
+            # Step I: Try to get accurate error message at best
+            error_message = self.safe_extract_error_message(response)
 
-                # Step II: Construct PromptflowException
-                if response.status_code >= 500:
-                    raise SerpAPISystemError(message=error_message)
-                else:
-                    raise SerpAPIUserError(message=error_message)
+            # Step II: Construct PromptflowException
+            if response.status_code >= 500:
+                raise SerpAPISystemError(message=error_message)
+            else:
+                raise SerpAPIUserError(message=error_message)
         except Exception as e:
             # SerpApi is super robust. Set basic error handle
             if not isinstance(e, PromptflowException):

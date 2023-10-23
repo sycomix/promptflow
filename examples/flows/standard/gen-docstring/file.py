@@ -22,16 +22,13 @@ class File:
         if self._is_url:
             response = requests.get(self.source)
             if response.status_code == 200:
-                content = response.text
-                return content
-            else:
-                print(f"Failed to retrieve content from URL: {self.source}")
-                return None
+                return response.text
+            print(f"Failed to retrieve content from URL: {self.source}")
+            return None
         else:
             try:
                 with open(self._path, "r") as file:
-                    content = file.read()
-                    return content
+                    return file.read()
             except FileNotFoundError:
                 print(f"File not found: {self.source}")
                 return None
@@ -68,14 +65,8 @@ class File:
 
     def create_new_file(self, content: str) -> None:
         if self._is_url:
-            path = os.path.join(
-                './',
-                self.filename + f"_doc.{self.language}",
-            )
+            path = os.path.join('./', f"{self.filename}_doc.{self.language}")
         else:
-            path = os.path.join(
-                self.dirname,
-                self.filename + f"_doc.{self.language}",
-            )
+            path = os.path.join(self.dirname, f"{self.filename}_doc.{self.language}")
         with open(path, "w") as f:
             f.write(content)

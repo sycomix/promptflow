@@ -22,14 +22,13 @@ def try_to_open_html(html_path: str) -> None:
     print(f"The HTML file is generated at {str(Path(html_path).resolve().absolute())!r}.")
     print("Trying to view the result in a web browser...")
     web_browser_opened = False
-    web_browser_opened = webbrowser.open(f"file://{html_path}")
-    if not web_browser_opened:
+    if web_browser_opened := webbrowser.open(f"file://{html_path}"):
+        print("Successfully visualized from the web browser.")
+    else:
         print(
             f"Failed to visualize from the web browser, the HTML file locates at {html_path!r}.\n"
             "You can manually open it with your web browser, or try SDK to visualize it."
         )
-    else:
-        print("Successfully visualized from the web browser.")
 
 
 def dump_html(html_string: str, html_path: Optional[str] = None, open_html: bool = True) -> None:

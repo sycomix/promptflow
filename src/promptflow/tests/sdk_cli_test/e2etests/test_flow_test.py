@@ -28,10 +28,10 @@ class TestFlowTest:
         flow_path = Path(f"{FLOWS_DIR}/web_classification").absolute()
 
         result = _client.test(flow=flow_path, inputs=inputs)
-        assert all([key in FLOW_RESULT_KEYS for key in result])
+        assert all(key in FLOW_RESULT_KEYS for key in result)
 
         result = _client.test(flow=f"{FLOWS_DIR}/web_classification")
-        assert all([key in FLOW_RESULT_KEYS for key in result])
+        assert all(key in FLOW_RESULT_KEYS for key in result)
 
     def test_pf_test_flow_with_custom_strong_type_connection(self, install_custom_tool_pkg):
         # Need to reload pkg_resources to get the latest installed tools
@@ -69,7 +69,7 @@ class TestFlowTest:
         flow_path = Path(f"{FLOWS_DIR}/web_classification").absolute()
 
         result = _client.test(flow=flow_path, inputs=inputs, node="convert_to_dict")
-        assert all([key in FLOW_RESULT_KEYS for key in result])
+        assert all(key in FLOW_RESULT_KEYS for key in result)
 
     def test_pf_test_flow_with_variant(self):
         inputs = {"url": "https://www.youtube.com/watch?v=o5ZQyXaAv1g", "answer": "Channel", "evidence": "Url"}
@@ -77,7 +77,7 @@ class TestFlowTest:
         result = _client.test(
             flow=f"{FLOWS_DIR}/web_classification", inputs=inputs, variant="${summarize_text_content.variant_1}"
         )
-        assert all([key in FLOW_RESULT_KEYS for key in result])
+        assert all(key in FLOW_RESULT_KEYS for key in result)
 
     @pytest.mark.skip("TODO this test case failed in windows and Mac")
     def test_pf_test_with_additional_includes(self, caplog):
@@ -85,12 +85,14 @@ class TestFlowTest:
             inputs = {"url": "https://www.youtube.com/watch?v=o5ZQyXaAv1g", "answer": "Channel", "evidence": "Url"}
             result = _client.test(flow=f"{FLOWS_DIR}/web_classification_with_additional_include", inputs=inputs)
         duplicate_file_content = "Found duplicate file in additional includes"
-        assert any([duplicate_file_content in record.message for record in caplog.records])
-        assert all([key in FLOW_RESULT_KEYS for key in result])
+        assert any(
+            duplicate_file_content in record.message for record in caplog.records
+        )
+        assert all(key in FLOW_RESULT_KEYS for key in result)
 
         inputs = {"classify_with_llm.output": '{"category": "App", "evidence": "URL"}'}
         result = _client.test(flow=f"{FLOWS_DIR}/web_classification", inputs=inputs, node="convert_to_dict")
-        assert all([key in FLOW_RESULT_KEYS for key in result])
+        assert all(key in FLOW_RESULT_KEYS for key in result)
 
         # Test additional includes don't exist
         with pytest.raises(ValueError) as e:
@@ -100,11 +102,11 @@ class TestFlowTest:
     def test_pf_flow_test_with_symbolic(self, prepare_symbolic_flow):
         inputs = {"url": "https://www.youtube.com/watch?v=o5ZQyXaAv1g", "answer": "Channel", "evidence": "Url"}
         result = _client.test(flow=f"{FLOWS_DIR}/web_classification_with_additional_include", inputs=inputs)
-        assert all([key in FLOW_RESULT_KEYS for key in result])
+        assert all(key in FLOW_RESULT_KEYS for key in result)
 
         inputs = {"classify_with_llm.output": '{"category": "App", "evidence": "URL"}'}
         result = _client.test(flow=f"{FLOWS_DIR}/web_classification", inputs=inputs, node="convert_to_dict")
-        assert all([key in FLOW_RESULT_KEYS for key in result])
+        assert all(key in FLOW_RESULT_KEYS for key in result)
 
     def test_pf_flow_test_with_exception(self, capsys):
         # Test flow with exception

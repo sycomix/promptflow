@@ -110,7 +110,7 @@ class CacheManager(AbstractCacheManager):
         # Query if cache result existed by hash_id.
         cache_result_list: List[CacheInfo] = self._cache_storage.get_cache_record_list(hash_id=hash_id)
 
-        if len(cache_result_list) == 0:
+        if not cache_result_list:
             return None
 
         # Get the latest cache result.

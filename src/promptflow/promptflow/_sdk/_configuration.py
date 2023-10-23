@@ -140,7 +140,7 @@ class Configuration(object):
             return ConnectionProvider.LOCAL
         if provider == ConnectionProvider.AZUREML.value:
             # Note: The below function has azure-ai-ml dependency.
-            return "azureml:" + self._get_workspace_from_config()
+            return f"azureml:{self._get_workspace_from_config()}"
         # If provider not None and not Azure, return it directly.
         # It can be the full path of a workspace.
         return provider
@@ -158,12 +158,10 @@ class Configuration(object):
     def get_or_set_installation_id(self):
         """Get user id if exists, otherwise set installation id and return it."""
         user_id = self.get_config(key=self.INSTALLATION_ID)
-        if user_id:
-            return user_id
-        else:
+        if not user_id:
             user_id = str(uuid.uuid4())
             self.set_config(key=self.INSTALLATION_ID, value=user_id)
-            return user_id
+        return user_id
 
     def _to_dict(self):
         return self._config

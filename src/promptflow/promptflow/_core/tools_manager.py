@@ -93,16 +93,13 @@ def collect_package_tools_and_connections(keys: Optional[List[str]] = None) -> d
                 tool["package_version"] = entry_point.dist.version
                 all_package_tools[identifier] = tool
 
-                # Get custom strong type connection definition
-                custom_strong_type_connections_classes = [
+                if custom_strong_type_connections_classes := [
                     obj
                     for name, obj in inspect.getmembers(module)
                     if inspect.isclass(obj)
                     and ConnectionType.is_custom_strong_type(obj)
                     and (not ConnectionType.is_connection_class_name(name))
-                ]
-
-                if custom_strong_type_connections_classes:
+                ]:
                     for cls in custom_strong_type_connections_classes:
                         identifier = f"{cls.__module__}.{cls.__name__}"
                         connection_spec = generate_custom_strong_type_connection_spec(
@@ -148,8 +145,7 @@ def gen_tool_by_source(name, source: ToolSource, tool_type: ToolType, working_di
                 ),
                 node_name=name,
             )
-        with open(working_dir / source.path) as fin:
-            content = fin.read()
+        content = Path(working_dir / source.path).read_text()
         if tool_type == ToolType.PYTHON:
             # TODO: working directory doesn't take effect when loading module.
             return generate_python_tool(name, content, source=str(working_dir / source.path))
@@ -209,8 +205,9 @@ class BuiltinsManager:
                     + f" got {v.serialize()!r}"
                 )
             init_inputs_values[k] = v.value
-        missing_inputs = set(provider_class.get_required_initialize_inputs()) - set(init_inputs_values)
-        if missing_inputs:
+        if missing_inputs := set(
+            provider_class.get_required_initialize_inputs()
+        ) - set(init_inputs_values):
             raise MissingRequiredInputs(
                 message=f"Required inputs {list(missing_inputs)} are not provided for tool '{tool_name}'.",
                 target=ErrorTarget.EXECUTOR,
@@ -230,9 +227,7 @@ class BuiltinsManager:
 
     @staticmethod
     def load_tool_by_api_name(api_name: str) -> Tool:
-        if api_name is None:
-            return None
-        return BuiltinsManager._load_llm_api(api_name)
+        return None if api_name is None else BuiltinsManager._load_llm_api(api_name)
 
     def load_prompt_with_api(self, tool: Tool, api: Tool, node_inputs: Optional[dict] = None) -> Tuple[Callable, dict]:
         """Load a prompt template tool with action."""
@@ -282,7 +277,7 @@ class ToolsManager:
         loaded_tools: Optional[Mapping[str, Callable]] = None,
     ) -> None:
         loaded_tools = loaded_tools or {}
-        self._tools = {k: v for k, v in loaded_tools.items()}
+        self._tools = dict(loaded_tools.items())
 
     def load_tools(self, tools: Mapping[str, Callable]) -> None:
         """Load new tools to the manager."""

@@ -247,9 +247,9 @@ class TestValidation:
             batch_input,
         )
         if (
-            (sys.version_info.major == 3)
-            and (sys.version_info.minor >= 11)
-            and ((sys.platform == "linux") or (sys.platform == "darwin"))
+            sys.version_info.major == 3
+            and sys.version_info.minor >= 11
+            and sys.platform in ["linux", "darwin"]
         ):
             # Python >= 3.11 has a different error message on linux and macos
             error_message_compare = error_message.replace("int", "ValueType.INT")
@@ -382,14 +382,13 @@ class TestValidation:
             assert len(result.line_results) == 1
             assert result.line_results[0].run_info.status == Status.Completed
             assert result.line_results[0].run_info.error is None
+        elif raise_on_line_failure:
+            with pytest.raises(error_class):
+                executor.exec_bulk(batch_input, raise_on_line_failure=raise_on_line_failure)
         else:
-            if raise_on_line_failure:
-                with pytest.raises(error_class):
-                    executor.exec_bulk(batch_input, raise_on_line_failure=raise_on_line_failure)
-            else:
-                result = executor.exec_bulk(batch_input, raise_on_line_failure=raise_on_line_failure)
-                assert result.line_results[0].run_info.status == Status.Failed
-                assert error_class.__name__ in json.dumps(result.line_results[0].run_info.error)
+            result = executor.exec_bulk(batch_input, raise_on_line_failure=raise_on_line_failure)
+            assert result.line_results[0].run_info.status == Status.Failed
+            assert error_class.__name__ in json.dumps(result.line_results[0].run_info.error)
 
     @pytest.mark.parametrize(
         "flow_folder, batch_input, validate, error_class,",

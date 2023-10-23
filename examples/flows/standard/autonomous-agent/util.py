@@ -143,9 +143,7 @@ def generate_context(prompt, full_message_history, user_prompt, model="gpt-3.5-t
 
 
 def preprocess_json_input(input_str: str) -> str:
-    # Replace single backslashes with double backslashes, while leaving already escaped ones intact
-    corrected_str = re.sub(r'(?<!\\)\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})', r"\\\\", input_str)
-    return corrected_str
+    return re.sub(r'(?<!\\)\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})', r"\\\\", input_str)
 
 
 def construct_prompt(current_context):
@@ -159,5 +157,4 @@ def construct_prompt(current_context):
             update_current_context.append(":\n".join([role, "name", name]) + "\n" + ":\n".join(["content", content]))
         else:
             update_current_context.append(":\n".join([role, content]))
-    update_current_context = "\n".join(update_current_context)
-    return update_current_context
+    return "\n".join(update_current_context)

@@ -58,23 +58,21 @@ class OpenAI(ToolProvider):
         response = openai.Completion.create(
             prompt=prompt,
             model=model.value if isinstance(model, Enum) else model,
-            # empty string suffix should be treated as None.
             suffix=suffix if suffix else None,
-            max_tokens=int(max_tokens),
-            temperature=float(temperature),
-            top_p=float(top_p),
-            n=int(n),
+            max_tokens=max_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            n=n,
             stream=stream,
-            logprobs=int(logprobs) if logprobs else None,
+            logprobs=logprobs if logprobs else None,
             echo=echo,
             stop=stop if stop else None,
-            presence_penalty=float(presence_penalty),
-            frequency_penalty=float(frequency_penalty),
-            best_of=int(best_of),
-            # Logit bias must be a dict if we passed it to openai api.
+            presence_penalty=presence_penalty,
+            frequency_penalty=frequency_penalty,
+            best_of=best_of,
             logit_bias=logit_bias if logit_bias else {},
             user=user,
-            **self._connection_dict,
+            **self._connection_dict
         )
 
         if stream:
@@ -118,16 +116,18 @@ class OpenAI(ToolProvider):
         params = {
             "model": model,
             "messages": messages,
-            "temperature": float(temperature),
-            "top_p": float(top_p),
-            "n": int(n),
+            "temperature": temperature,
+            "top_p": top_p,
+            "n": n,
             "stream": stream,
             "stop": stop if stop else None,
-            "max_tokens": int(max_tokens) if max_tokens and str(max_tokens).lower() != "inf" else None,
-            "presence_penalty": float(presence_penalty),
-            "frequency_penalty": float(frequency_penalty),
+            "max_tokens": max_tokens
+            if max_tokens and str(max_tokens).lower() != "inf"
+            else None,
+            "presence_penalty": presence_penalty,
+            "frequency_penalty": frequency_penalty,
             "logit_bias": logit_bias,
-            "user": user
+            "user": user,
         }
 
         if functions is not None:

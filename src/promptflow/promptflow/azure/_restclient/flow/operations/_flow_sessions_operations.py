@@ -201,10 +201,7 @@ class FlowSessionsOperations(object):
         if response.status_code == 202:
             deserialized = self._deserialize('object', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     create_flow_session.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowSessions/{sessionId}'}  # type: ignore
 
@@ -255,7 +252,7 @@ class FlowSessionsOperations(object):
         }
         error_map.update(kwargs.pop('error_map', {}))
 
-        
+
         request = build_poll_operation_status_request(
             subscription_id=subscription_id,
             resource_group_name=resource_group_name,
@@ -281,10 +278,7 @@ class FlowSessionsOperations(object):
 
         deserialized = self._deserialize('object', pipeline_response)
 
-        if cls:
-            return cls(pipeline_response, deserialized, {})
-
-        return deserialized
+        return cls(pipeline_response, deserialized, {}) if cls else deserialized
 
     poll_operation_status.metadata = {'url': '/flow/api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/FlowSessions/{sessionId}/{actionType}/locations/{location}/operations/{operationId}'}  # type: ignore
 

@@ -30,10 +30,14 @@ def inject_function(args_to_ignore=None, trace_type=TraceType.LLM):
             if not Tracer.active():
                 return f(*args, **kwargs)
 
-            all_kwargs = {**{k: v for k, v in zip(sig.keys(), args)}, **kwargs}
+            all_kwargs = dict(zip(sig.keys(), args)) | kwargs
             for key in args_to_ignore:
                 all_kwargs.pop(key, None)
-            name = f.__qualname__ if not f.__module__ else f.__module__ + "." + f.__qualname__
+            name = (
+                f.__qualname__
+                if not f.__module__
+                else f"{f.__module__}.{f.__qualname__}"
+            )
             trace = Trace(
                 name=name,
                 type=trace_type,

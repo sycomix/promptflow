@@ -58,7 +58,7 @@ class ToolResolver:
             return connection_value._convert_to_custom_strong_type()
 
         # Check if type matched
-        if not any(type(connection_value).__name__ == typ for typ in conn_types):
+        if all(type(connection_value).__name__ != typ for typ in conn_types):
             msg = (
                 f"Input '{k}' for node '{node.name}' of type {type(connection_value).__name__!r}"
                 f" is not supported, valid types {conn_types}."
@@ -140,8 +140,7 @@ class ToolResolver:
             return fin.read()
 
     def _validate_duplicated_inputs(self, prompt_tpl_inputs: list, tool_params: list, msg: str):
-        duplicated_inputs = set(prompt_tpl_inputs) & set(tool_params)
-        if duplicated_inputs:
+        if duplicated_inputs := set(prompt_tpl_inputs) & set(tool_params):
             raise NodeInputValidationError(
                 message=msg.format(duplicated_inputs=duplicated_inputs),
                 target=ErrorTarget.EXECUTOR,

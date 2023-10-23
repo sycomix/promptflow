@@ -118,9 +118,7 @@ class RunInfo(Base):
         with mgmt_db_session() as session:
             # if not update system metrics, we can directly update the row;
             # otherwise, we need to get properties first, update the dict and finally update the row
-            if system_metrics is None:
-                session.query(RunInfo).filter(RunInfo.name == self.name).update(update_dict)
-            else:
+            if system_metrics is not None:
                 # with high concurrency on same row, we may lose the earlier commit
                 # we regard it acceptable as it should be an edge case to update properties
                 # on same row with high concurrency;
@@ -129,7 +127,7 @@ class RunInfo(Base):
                 props = json.loads(run_info.properties)
                 props[FlowRunProperties.SYSTEM_METRICS] = system_metrics.copy()
                 update_dict["properties"] = json.dumps(props)
-                session.query(RunInfo).filter(RunInfo.name == self.name).update(update_dict)
+            session.query(RunInfo).filter(RunInfo.name == self.name).update(update_dict)
             session.commit()
 
     @staticmethod

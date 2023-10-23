@@ -161,7 +161,7 @@ class TestToolResolver:
             tool_resolver = ToolResolver(working_dir=None, connections=connections)
             tool_resolver._convert_node_literal_input_types(node, tool)
         message = "'AzureOpenAIConnection' is not supported, valid types ['CustomConnection']"
-        assert message in str(e.value), "Expected: {}, Actual: {}".format(message, str(e.value))
+        assert message in str(e.value), f"Expected: {message}, Actual: {str(e.value)}"
 
         # Case 3: Literal value, type mismatch
         tool = Tool(name="mock", type="python", inputs={"int_input": InputDefinition(type=[ValueType.INT])})
@@ -175,7 +175,7 @@ class TestToolResolver:
             tool_resolver = ToolResolver(working_dir=None, connections=connections)
             tool_resolver._convert_node_literal_input_types(node, tool)
         message = "value invalid is not type int"
-        assert message in str(e.value), "Expected: {}, Actual: {}".format(message, str(e.value))
+        assert message in str(e.value), f"Expected: {message}, Actual: {str(e.value)}"
 
         # Case 4: Unresolved value, like newly added type not in old version ValueType enum
         tool = Tool(name="mock", type="python", inputs={"int_input": InputDefinition(type=["A_good_type"])})

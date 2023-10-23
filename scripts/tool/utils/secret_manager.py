@@ -23,9 +23,7 @@ def get_secret_client(
     tenant_id: str, client_id: str, client_secret: str
 ) -> SecretClient:
     credential = ClientSecretCredential(tenant_id, client_id, client_secret)
-    client = SecretClient(vault_url=KVUri, credential=credential)
-
-    return client
+    return SecretClient(vault_url=KVUri, credential=credential)
 
 
 reserved_secret_names = []

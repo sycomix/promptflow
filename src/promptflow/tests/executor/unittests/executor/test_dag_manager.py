@@ -78,7 +78,9 @@ class TestDAGManager:
             "The node 'node2' referenced by 'node3' has been bypassed, so the node cannot return valid value. "
             "Please refer to the node that will not be bypassed as the return value of skip config."
         )
-        assert str(e.value) == error_message, "Expected: {}, Actual: {}".format(error_message, str(e.value))
+        assert (
+            str(e.value) == error_message
+        ), f"Expected: {error_message}, Actual: {str(e.value)}"
 
     def test_complete_nodes(self):
         nodes = [create_test_node("node1", input="value1")]

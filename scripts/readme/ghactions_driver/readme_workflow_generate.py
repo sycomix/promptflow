@@ -19,7 +19,7 @@ def write_readme_workflow(readme_path, output_telemetry=Telemetry()):
         .replace("/", "_")
         .replace("-", "_")
     )
-    workflow_name = "samples_" + workflow_name
+    workflow_name = f"samples_{workflow_name}"
 
     ReadmeSteps.setup_target(
         workflow_path,

@@ -90,7 +90,7 @@ class FlowServiceCaller(RequestTelemetryMixin):
 
     def __init__(self, workspace, credential, base_url=None, region=None, **kwargs):
         """Initializes DesignerServiceCaller."""
-        if 'get_instance' != sys._getframe().f_back.f_code.co_name:
+        if sys._getframe().f_back.f_code.co_name != 'get_instance':
             raise UserErrorException(
                 'Please use `_FlowServiceCallerFactory.get_instance()` to get service caller '
                 'instead of creating a new one.'
@@ -115,8 +115,10 @@ class FlowServiceCaller(RequestTelemetryMixin):
 
     def _get_headers(self):
         token = self._credential.get_token("https://management.azure.com/.default")
-        custom_header = {"Authorization": "Bearer " + token.token, "x-ms-client-request-id": self._request_id}
-        return custom_header
+        return {
+            "Authorization": f"Bearer {token.token}",
+            "x-ms-client-request-id": self._request_id,
+        }
 
     def _set_headers_with_user_aml_token(self, headers):
         # NOTE: this copied from https://github.com/Azure/azure-sdk-for-python/blob/05f1438ad0a5eb536e5c49d8d9d44b798445044a/sdk/ml/azure-ai-ml/azure/ai/ml/operations/_job_operations.py#L1495C12-L1495C12

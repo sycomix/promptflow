@@ -3,8 +3,7 @@ from typing import Generator
 
 
 def stream(question: str) -> Generator[str, None, None]:
-    for word in question:
-        yield word
+    yield from question
 
 
 @tool

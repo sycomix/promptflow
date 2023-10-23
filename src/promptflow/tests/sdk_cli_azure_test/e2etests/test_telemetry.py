@@ -14,10 +14,7 @@ from promptflow._telemetry.logging_handler import PromptFlowSDKLogHandler, get_a
 
 @contextlib.contextmanager
 def environment_variable_overwrite(key, val):
-    if key in os.environ.keys():
-        backup_value = os.environ[key]
-    else:
-        backup_value = None
+    backup_value = os.environ.get(key, None)
     os.environ[key] = val
 
     try:
@@ -89,7 +86,5 @@ class TestTelemetry:
         with patch.object(AzureEventHandler, "log_record_to_envelope") as mock_log:
             mock_log.side_effect = log_event
             with cli_consent_config_overwrite(True):
-                try:
+                with contextlib.suppress(Exception):
                     pf.runs.get("not_exist")
-                except Exception:
-                    pass

@@ -326,9 +326,7 @@ class Run(YAMLTranslatableMixin):
             if self.run:
                 run_name = self.run.name if isinstance(self.run, Run) else self.run
                 result[RunDataKeys.RUN] = properties.pop(FlowRunProperties.RUN, run_name)
-            # add exception part if any
-            exception_dict = local_storage.load_exception()
-            if exception_dict:
+            if exception_dict := local_storage.load_exception():
                 result["error"] = exception_dict
         elif self._run_source == RunInfoSources.INDEX_SERVICE:
             result["creation_context"] = self._creation_context
@@ -421,12 +419,10 @@ class Run(YAMLTranslatableMixin):
 
     def _get_flow_dir(self) -> Path:
         flow = Path(self.flow)
-        if flow.is_dir():
-            return flow
-        return flow.parent
+        return flow if flow.is_dir() else flow.parent
 
     @classmethod
-    def _get_schema_cls(self):
+    def _get_schema_cls(cls):
         return RunSchema
 
     def _to_rest_object(self):
@@ -438,16 +434,15 @@ class Run(YAMLTranslatableMixin):
             SubmitBulkRunRequest,
         )
 
-        if self.run is not None:
-            if isinstance(self.run, Run):
-                variant = self.run.name
-            elif isinstance(self.run, str):
-                variant = self.run
-            else:
-                raise UserErrorException(f"Invalid run type: {type(self.run)}")
-        else:
+        if self.run is None:
             variant = None
 
+        elif isinstance(self.run, Run):
+            variant = self.run.name
+        elif isinstance(self.run, str):
+            variant = self.run
+        else:
+            raise UserErrorException(f"Invalid run type: {type(self.run)}")
         if not variant and not self.data:
             raise UserErrorException("Either run or data should be provided")
 
@@ -470,31 +465,7 @@ class Run(YAMLTranslatableMixin):
                         )
                     inputs_mapping[k] = val
 
-        if str(self.flow).startswith("azureml://"):
-            # upload via _check_and_upload_path
-            # submit with params FlowDefinitionDataStoreName and FlowDefinitionBlobPath
-            path_uri = AzureMLDatastorePathUri(str(self.flow))
-            return SubmitBulkRunRequest(
-                flow_definition_data_store_name=path_uri.datastore,
-                flow_definition_blob_path=path_uri.path,
-                run_id=self.name,
-                # will use user provided display name since PFS will have special logic to update it.
-                run_display_name=self._get_default_display_name(),
-                description=self.description,
-                tags=self.tags,
-                node_variant=self.variant,
-                variant_run_id=variant,
-                batch_data_input=BatchDataInput(
-                    data_uri=self.data,
-                ),
-                inputs_mapping=inputs_mapping,
-                run_experiment_name=self._experiment_name,
-                environment_variables=self.environment_variables,
-                connections=self.connections,
-                flow_lineage_id=self._lineage_id,
-                run_display_name_generation_type=RunDisplayNameGenerationType.USER_PROVIDED_MACRO,
-            )
-        else:
+        if not str(self.flow).startswith("azureml://"):
             # upload via CodeOperations.create_or_update
             # submit with param FlowDefinitionDataUri
             return SubmitBulkRunRequest(
@@ -515,6 +486,29 @@ class Run(YAMLTranslatableMixin):
                 flow_lineage_id=self._lineage_id,
                 run_display_name_generation_type=RunDisplayNameGenerationType.USER_PROVIDED_MACRO,
             )
+        # upload via _check_and_upload_path
+        # submit with params FlowDefinitionDataStoreName and FlowDefinitionBlobPath
+        path_uri = AzureMLDatastorePathUri(str(self.flow))
+        return SubmitBulkRunRequest(
+            flow_definition_data_store_name=path_uri.datastore,
+            flow_definition_blob_path=path_uri.path,
+            run_id=self.name,
+            # will use user provided display name since PFS will have special logic to update it.
+            run_display_name=self._get_default_display_name(),
+            description=self.description,
+            tags=self.tags,
+            node_variant=self.variant,
+            variant_run_id=variant,
+            batch_data_input=BatchDataInput(
+                data_uri=self.data,
+            ),
+            inputs_mapping=inputs_mapping,
+            run_experiment_name=self._experiment_name,
+            environment_variables=self.environment_variables,
+            connections=self.connections,
+            flow_lineage_id=self._lineage_id,
+            run_display_name_generation_type=RunDisplayNameGenerationType.USER_PROVIDED_MACRO,
+        )
 
     def _check_run_status_is_completed(self) -> None:
         if self.status != RunStatus.COMPLETED:

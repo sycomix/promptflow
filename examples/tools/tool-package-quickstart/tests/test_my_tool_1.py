@@ -7,14 +7,13 @@ from my_tool_package.tools.my_tool_1 import my_tool
 
 @pytest.fixture
 def my_custom_connection() -> CustomConnection:
-    my_custom_connection = CustomConnection(
+    return CustomConnection(
         {
-            "api-key" : "my-api-key",
-            "api-secret" : "my-api-secret",
-            "api-url" : "my-api-url"
+            "api-key": "my-api-key",
+            "api-secret": "my-api-secret",
+            "api-url": "my-api-url",
         }
     )
-    return my_custom_connection
 
 
 class TestMyTool1:

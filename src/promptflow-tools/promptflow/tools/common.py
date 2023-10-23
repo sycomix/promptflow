@@ -48,43 +48,41 @@ def validate_functions(functions):
                  "or view sample 'How to use functions with chat models' in our gallery."
     if len(functions) == 0:
         raise ChatAPIInvalidFunctions(message=f"functions cannot be an empty list. {common_tsg}")
-    else:
-        for i, function in enumerate(functions):
-            # validate if the function is a dict
-            if not isinstance(function, dict):
-                raise ChatAPIInvalidFunctions(message=f"function {i} '{function}' is not a dict. {common_tsg}")
-            # validate if has required keys
-            for key in ["name", "parameters"]:
-                if key not in function.keys():
-                    raise ChatAPIInvalidFunctions(
-                        message=f"function {i} '{function}' does not have '{key}' property. {common_tsg}")
-            # validate if the parameters is a dict
-            if not isinstance(function["parameters"], dict):
+    for i, function in enumerate(functions):
+        # validate if the function is a dict
+        if not isinstance(function, dict):
+            raise ChatAPIInvalidFunctions(message=f"function {i} '{function}' is not a dict. {common_tsg}")
+        # validate if has required keys
+        for key in ["name", "parameters"]:
+            if key not in function.keys():
+                raise ChatAPIInvalidFunctions(
+                    message=f"function {i} '{function}' does not have '{key}' property. {common_tsg}")
+        # validate if the parameters is a dict
+        if not isinstance(function["parameters"], dict):
+            raise ChatAPIInvalidFunctions(
+                message=f"function {i} '{function['name']}' parameters '{function['parameters']}' "
+                        f"should be described as a JSON Schema object. {common_tsg}")
+        # validate if the parameters has required keys
+        for key in ["type", "properties"]:
+            if key not in function["parameters"].keys():
                 raise ChatAPIInvalidFunctions(
                     message=f"function {i} '{function['name']}' parameters '{function['parameters']}' "
-                            f"should be described as a JSON Schema object. {common_tsg}")
-            # validate if the parameters has required keys
-            for key in ["type", "properties"]:
-                if key not in function["parameters"].keys():
-                    raise ChatAPIInvalidFunctions(
-                        message=f"function {i} '{function['name']}' parameters '{function['parameters']}' "
-                                f"does not have '{key}' property. {common_tsg}")
-            # validate if the parameters type is object
-            if function["parameters"]["type"] != "object":
-                raise ChatAPIInvalidFunctions(
-                    message=f"function {i} '{function['name']}' parameters 'type' "
-                            f"should be 'object'. {common_tsg}")
-            # validate if the parameters properties is a dict
-            if not isinstance(function["parameters"]["properties"], dict):
-                raise ChatAPIInvalidFunctions(
-                    message=f"function {i} '{function['name']}' parameters 'properties' "
-                            f"should be described as a JSON Schema object. {common_tsg}")
+                            f"does not have '{key}' property. {common_tsg}")
+        # validate if the parameters type is object
+        if function["parameters"]["type"] != "object":
+            raise ChatAPIInvalidFunctions(
+                message=f"function {i} '{function['name']}' parameters 'type' "
+                        f"should be 'object'. {common_tsg}")
+        # validate if the parameters properties is a dict
+        if not isinstance(function["parameters"]["properties"], dict):
+            raise ChatAPIInvalidFunctions(
+                message=f"function {i} '{function['name']}' parameters 'properties' "
+                        f"should be described as a JSON Schema object. {common_tsg}")
 
 
 def parse_function_role_prompt(function_str):
     pattern = r"\n*name:\n\s*(\S+)\s*\n*content:\n(.*)"
-    match = re.search(pattern, function_str, re.DOTALL)
-    if match:
+    if match := re.search(pattern, function_str, re.DOTALL):
         return match.group(1), match.group(2)
     else:
         raise ChatAPIFunctionRoleInvalidFormat(
@@ -102,7 +100,7 @@ def parse_chat(chat_str):
     chunks = re.split(separator, chat_str)
     chat_list = []
     for chunk in chunks:
-        last_message = chat_list[-1] if len(chat_list) > 0 else None
+        last_message = chat_list[-1] if chat_list else None
         if last_message and "role" in last_message and "content" not in last_message:
             if last_message["role"] == "function":
                 last_message["name"], last_message["content"] = parse_function_role_prompt(chunk)
@@ -205,7 +203,7 @@ def render_jinja_template(prompt, trim_blocks=True, keep_trailing_newline=True, 
 def process_function_call(function_call):
     if function_call is None:
         param = "auto"
-    elif function_call == "auto" or function_call == "none":
+    elif function_call in ["auto", "none"]:
         param = function_call
     else:
         function_call_example = json.dumps({"name": "function_name"})
@@ -226,33 +224,31 @@ def process_function_call(function_call):
             raise ChatAPIInvalidFunctions(
                 message=f"function_call parameter '{function_call}' must be a dict, but not {type(param)}. {common_tsg}"
             )
-        else:
-            if "name" not in param:
-                raise ChatAPIInvalidFunctions(
-                    message=f'function_call parameter {function_call} must contain "name" field. {common_tsg}'
-                )
+        if "name" not in param:
+            raise ChatAPIInvalidFunctions(
+                message=f'function_call parameter {function_call} must contain "name" field. {common_tsg}'
+            )
     return param
 
 
 def post_process_chat_api_response(completion, stream, functions):
-    if stream:
-        if functions is not None:
-            error_message = "Function calling has not been supported by stream mode yet."
-            raise FunctionCallNotSupportedInStreamMode(message=error_message)
-
-        def generator():
-            for chunk in completion:
-                if chunk.choices:
-                    yield getattr(chunk.choices[0]["delta"], "content", "")
-
-        # We must return the generator object, not using yield directly here.
-        # Otherwise, the function itself will become a generator, despite whether stream is True or False.
-        return generator()
-    else:
+    if not stream:
         # When calling function, function_call response will be returned as a field in message, so we need return
         # message directly. Otherwise, we only return content.
-        if functions is not None:
-            return completion.choices[0].message
-        else:
-            # chat api may return message with no content.
-            return getattr(completion.choices[0].message, "content", "")
+        return (
+            completion.choices[0].message
+            if functions is not None
+            else getattr(completion.choices[0].message, "content", "")
+        )
+    if functions is not None:
+        error_message = "Function calling has not been supported by stream mode yet."
+        raise FunctionCallNotSupportedInStreamMode(message=error_message)
+
+    def generator():
+        for chunk in completion:
+            if chunk.choices:
+                yield getattr(chunk.choices[0]["delta"], "content", "")
+
+    # We must return the generator object, not using yield directly here.
+    # Otherwise, the function itself will become a generator, despite whether stream is True or False.
+    return generator()

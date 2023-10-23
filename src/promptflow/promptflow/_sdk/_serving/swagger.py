@@ -42,24 +42,23 @@ def generate_output_field_schema(output: FlowOutputDefinition) -> dict:
 
 def generate_swagger(flow: Flow, samples, outputs_to_remove: list) -> dict:
     """convert a flow to swagger object."""
-    swagger = {"openapi": "3.0.0"}
-    swagger["info"] = {
-        "title": f"Promptflow[{flow.name}] API",
-        "version": "1.0.0",
-        "x-flow-name": str(flow.name),
-    }
-
-    swagger["components"] = {
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
+    swagger = {
+        "openapi": "3.0.0",
+        "info": {
+            "title": f"Promptflow[{flow.name}] API",
+            "version": "1.0.0",
+            "x-flow-name": str(flow.name),
+        },
+        "components": {
+            "securitySchemes": {
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                }
             }
-        }
+        },
+        "security": [{"bearerAuth": []}],
     }
-
-    swagger["security"] = [{"bearerAuth": []}]
-
     input_schema = {"type": "object"}
     request_body_required = False
     if len(flow.inputs) > 0:

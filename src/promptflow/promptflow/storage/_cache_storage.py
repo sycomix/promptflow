@@ -32,10 +32,10 @@ class LocalCacheRecord:
 
 
 class AbstractCacheStorage:
-    def get_cache_record_list(hash_id: str) -> CacheRecord:
+    def get_cache_record_list(self) -> CacheRecord:
         pass
 
-    def persist_cache_result(run_info: RunInfo):
+    def persist_cache_result(self):
         pass
 
 

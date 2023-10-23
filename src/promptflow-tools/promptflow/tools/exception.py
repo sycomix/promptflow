@@ -74,7 +74,7 @@ class ExceedMaxRetryTimes(WrappedOpenAIError):
 
     @property
     def message(self):
-        return "Exceed max retry times. " + super().message
+        return f"Exceed max retry times. {super().message}"
 
 
 class ToolValidationError(UserErrorException):

@@ -237,8 +237,7 @@ class RunOperations(TelemetryMixin):
             new_k = f"outputs.{k}"
             data[new_k] = copy.deepcopy(outputs[k])
             columns.append(new_k)
-        df = pd.DataFrame(data).head(max_results).reindex(columns=columns)
-        return df
+        return pd.DataFrame(data).head(max_results).reindex(columns=columns)
 
     @monitor_operation(activity_name="pf.runs.get_metrics", activity_type=ActivityType.PUBLICAPI)
     def get_metrics(self, name: Union[str, Run]) -> Dict[str, Any]:

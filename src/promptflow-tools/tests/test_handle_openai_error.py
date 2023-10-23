@@ -147,13 +147,13 @@ class TestHandleOpenAIError:
         ],
     )
     def test_retriable_openai_error_handle(self, mocker: MockerFixture, dummyExceptionList):
+        # Apply the retry decorator to the patched test_method
+        max_retry = 2
+        delay = 0.2
         for dummyEx in dummyExceptionList:
             # Patch the test_method to throw the desired exception
             patched_test_method = mocker.patch("promptflow.tools.aoai.completion", side_effect=dummyEx)
 
-            # Apply the retry decorator to the patched test_method
-            max_retry = 2
-            delay = 0.2
             decorated_test_method = handle_openai_error(tries=max_retry, delay=delay)(patched_test_method)
             mock_sleep = mocker.patch("time.sleep")  # Create a separate mock for time.sleep
 
@@ -161,8 +161,11 @@ class TestHandleOpenAIError:
                 decorated_test_method()
 
             assert patched_test_method.call_count == max_retry + 1
-            assert "Exceed max retry times. " + to_openai_error_message(dummyEx) == exc_info.value.message
-            error_codes = "UserError/OpenAIError/" + type(dummyEx).__name__
+            assert (
+                f"Exceed max retry times. {to_openai_error_message(dummyEx)}"
+                == exc_info.value.message
+            )
+            error_codes = f"UserError/OpenAIError/{type(dummyEx).__name__}"
             assert exc_info.value.error_codes == error_codes.split("/")
             expected_calls = [
                 mocker.call(delay),
@@ -188,14 +191,14 @@ class TestHandleOpenAIError:
     def test_retriable_openai_error_handle_with_header(
             self, mocker: MockerFixture, dummyExceptionList
     ):
+        # Apply the retry decorator to the patched test_method
+        max_retry = 2
+        delay = 0.2
+        header_delay = 0.3
         for dummyEx in dummyExceptionList:
             # Patch the test_method to throw the desired exception
             patched_test_method = mocker.patch("promptflow.tools.aoai.completion", side_effect=dummyEx)
 
-            # Apply the retry decorator to the patched test_method
-            max_retry = 2
-            delay = 0.2
-            header_delay = 0.3
             decorated_test_method = handle_openai_error(tries=max_retry, delay=delay)(patched_test_method)
             mock_sleep = mocker.patch("time.sleep")  # Create a separate mock for time.sleep
 
@@ -203,8 +206,11 @@ class TestHandleOpenAIError:
                 decorated_test_method()
 
             assert patched_test_method.call_count == max_retry + 1
-            assert "Exceed max retry times. " + to_openai_error_message(dummyEx) == exc_info.value.message
-            error_codes = "UserError/OpenAIError/" + type(dummyEx).__name__
+            assert (
+                f"Exceed max retry times. {to_openai_error_message(dummyEx)}"
+                == exc_info.value.message
+            )
+            error_codes = f"UserError/OpenAIError/{type(dummyEx).__name__}"
             assert exc_info.value.error_codes == error_codes.split("/")
             expected_calls = [
                 mocker.call(header_delay),
@@ -233,7 +239,7 @@ class TestHandleOpenAIError:
             with pytest.raises(UserErrorException) as exc_info:
                 completion(connection=azure_open_ai_connection, prompt="hello", deployment_name="text-ada-001")
             assert to_openai_error_message(dummyEx) == exc_info.value.message
-            error_codes = "UserError/OpenAIError/" + type(dummyEx).__name__
+            error_codes = f"UserError/OpenAIError/{type(dummyEx).__name__}"
             assert exc_info.value.error_codes == error_codes.split("/")
             assert mock_method.call_count == 1
 

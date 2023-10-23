@@ -8,15 +8,15 @@ from utils.logging import log
 
 # Download a pdf file from a url and return the path to the file
 def download(url: str) -> str:
-    path = ".pdfs/" + normalize_filename(url) + ".pdf"
-    lock_path = path + ".lock"
+    path = f".pdfs/{normalize_filename(url)}.pdf"
+    lock_path = f"{path}.lock"
 
     with acquire_lock(lock_path):
         if os.path.exists(path):
-            log("Pdf already exists in " + os.path.abspath(path))
+            log(f"Pdf already exists in {os.path.abspath(path)}")
             return path
 
-        log("Downloading pdf from " + url)
+        log(f"Downloading pdf from {url}")
         response = requests.get(url)
 
         with open(path, "wb") as f:

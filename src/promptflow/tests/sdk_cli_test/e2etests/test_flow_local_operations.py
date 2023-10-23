@@ -158,7 +158,7 @@ class TestFlowLocalOperations:
                 flow_dag_content = yaml.safe_load(f)
                 assert NODE_VARIANTS not in flow_dag_content
                 assert "additional_includes" not in flow_dag_content
-                assert not any([USE_VARIANTS in node for node in flow_dag_content["nodes"]])
+                assert all(USE_VARIANTS not in node for node in flow_dag_content["nodes"])
 
     def test_flow_build_as_docker_with_variant(self, pf) -> None:
         source = f"{FLOWS_DIR}/web_classification_with_additional_include"

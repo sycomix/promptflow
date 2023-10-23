@@ -26,5 +26,4 @@ def autogpt_easy_start(connection: Union[AzureOpenAIConnection, OpenAIConnection
         user_prompt=user_prompt,
         triggering_prompt=triggering_prompt
     )
-    result = agent.run()
-    return result
+    return agent.run()

@@ -73,7 +73,7 @@ def log_activity(
         exception = e
         completion_status = ActivityCompletionStatus.FAILURE
     finally:
-        try:
+        with contextlib.suppress(Exception):
             end_time = datetime.utcnow()
             duration_ms = round((end_time - start_time).total_seconds() * 1000, 2)
 
@@ -84,9 +84,6 @@ def log_activity(
                 logger.error(message, extra={"custom_dimensions": activity_info})
             else:
                 logger.info(message, extra={"custom_dimensions": activity_info})
-        except Exception:  # pylint: disable=broad-except
-            # skip if logger failed to log
-            pass  # pylint: disable=lost-exception
         # raise the exception to align with the behavior of the with statement
         if exception:
             raise exception
@@ -94,13 +91,10 @@ def log_activity(
 
 def extract_telemetry_info(self):
     """Extract pf telemetry info from given telemetry mix-in instance."""
-    result = {}
-    try:
+    with contextlib.suppress(Exception):
         if isinstance(self, TelemetryMixin):
             return self._get_telemetry_values()
-    except Exception:
-        pass
-    return result
+    return {}
 
 
 def monitor_operation(

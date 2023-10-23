@@ -32,12 +32,11 @@ def get_appinsights_log_handler():
             "installation_id": config.get_or_set_installation_id(),
         }
 
-        handler = PromptFlowSDKLogHandler(
+        return PromptFlowSDKLogHandler(
             connection_string=f"InstrumentationKey={instrumentation_key}",
             custom_properties=custom_properties,
             enable_telemetry=is_telemetry_enabled(),
         )
-        return handler
     except Exception:  # pylint: disable=broad-except
         # ignore any exceptions, telemetry collection errors shouldn't block an operation
         return logging.NullHandler()
@@ -62,7 +61,9 @@ class PromptFlowSDKLogHandler(AzureEventHandler):
             self._queue.put(record, block=False)
 
             # log the record immediately if it is an error
-            if record.exc_info and not all(item is None for item in record.exc_info):
+            if record.exc_info and any(
+                item is not None for item in record.exc_info
+            ):
                 self._queue.flush()
         except Exception:  # pylint: disable=broad-except
             # ignore any exceptions, telemetry collection errors shouldn't block an operation

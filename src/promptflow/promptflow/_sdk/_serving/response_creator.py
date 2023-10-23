@@ -96,8 +96,7 @@ class ResponseCreator:
                 raise NotAcceptable(
                     media_type=self.accept_mimetypes, supported_media_types="text/event-stream, application/json"
                 )
+        elif self.accept_json:
+            return self.create_json_response()
         else:
-            if self.accept_json:
-                return self.create_json_response()
-            else:
-                raise NotAcceptable(media_type=self.accept_mimetypes, supported_media_types="application/json")
+            raise NotAcceptable(media_type=self.accept_mimetypes, supported_media_types="application/json")

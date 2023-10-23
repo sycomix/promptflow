@@ -48,7 +48,7 @@ def code_refine(original_code: str) -> str:
     except json.JSONDecodeError:
         return "JSONDecodeError"
     except Exception as e:
-        return "Unknown Error:" + str(e)
+        return f"Unknown Error:{str(e)}"
 
 
 if __name__ == "__main__":

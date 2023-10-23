@@ -137,11 +137,7 @@ class ProtectedFlow(Flow, SchemaValidatableMixin):
 
     @classmethod
     def _get_flow_definition(cls, flow, base_path=None) -> Tuple[Path, str]:
-        if base_path:
-            flow_path = Path(base_path) / flow
-        else:
-            flow_path = Path(flow)
-
+        flow_path = Path(base_path) / flow if base_path else Path(flow)
         if flow_path.is_dir() and (flow_path / DAG_FILE_NAME).is_file():
             return flow_path, DAG_FILE_NAME
         elif flow_path.is_file():

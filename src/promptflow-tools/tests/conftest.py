@@ -31,8 +31,7 @@ def azure_open_ai_connection():
 
 @pytest.fixture
 def aoai_provider(azure_open_ai_connection) -> AzureOpenAI:
-    aoai_provider = AzureOpenAI(azure_open_ai_connection)
-    return aoai_provider
+    return AzureOpenAI(azure_open_ai_connection)
 
 
 @pytest.fixture
@@ -57,7 +56,7 @@ def skip_if_no_key(request, mocker):
         conn_name = request.node.get_closest_marker('skip_if_no_key').args[0]
         connection = request.getfixturevalue(conn_name)
         # if dummy placeholder key, skip.
-        if isinstance(connection, OpenAIConnection) or isinstance(connection, SerpConnection):
+        if isinstance(connection, (OpenAIConnection, SerpConnection)):
             if "-api-key" in connection.api_key:
                 pytest.skip('skipped because no key')
         elif isinstance(connection, CustomConnection):
@@ -68,9 +67,10 @@ def skip_if_no_key(request, mocker):
 # example prompts
 @pytest.fixture
 def example_prompt_template() -> str:
-    with open(PROMOTFLOW_ROOT / "tests/test_configs/prompt_templates/marketing_writer/prompt.jinja2") as f:
-        prompt_template = f.read()
-    return prompt_template
+    return Path(
+        PROMOTFLOW_ROOT
+        / "tests/test_configs/prompt_templates/marketing_writer/prompt.jinja2"
+    ).read_text()
 
 
 @pytest.fixture
@@ -82,9 +82,10 @@ def chat_history() -> list:
 
 @pytest.fixture
 def example_prompt_template_with_function() -> str:
-    with open(PROMOTFLOW_ROOT / "tests/test_configs/prompt_templates/prompt_with_function.jinja2") as f:
-        prompt_template = f.read()
-    return prompt_template
+    return Path(
+        PROMOTFLOW_ROOT
+        / "tests/test_configs/prompt_templates/prompt_with_function.jinja2"
+    ).read_text()
 
 
 # functions

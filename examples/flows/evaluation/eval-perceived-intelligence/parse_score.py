@@ -8,8 +8,7 @@ def parse_score(gpt_score: str):
 
 
 def extract_float(s):
-    match = re.search(r"[-+]?\d*\.\d+|\d+", s)
-    if match:
+    if match := re.search(r"[-+]?\d*\.\d+|\d+", s):
         return float(match.group())
     else:
         return None

@@ -31,8 +31,7 @@ class FlowSchema(YamlFileSchema):
     def update_properties(self, dct, **kwargs):
         folder = Path(self.context["base_path"])
 
-        flow_type = dct.get("type")
-        if flow_type:
+        if flow_type := dct.get("type"):
             mapping = {
                 "standard": "default",
                 "evaluate": "evaluation",

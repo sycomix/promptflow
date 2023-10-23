@@ -3,4 +3,4 @@
 # ---------------------------------------------------------
 from promptflow._version import VERSION
 
-USER_AGENT = "{}/{}".format("promptflow-cli", VERSION)
+USER_AGENT = f"promptflow-cli/{VERSION}"

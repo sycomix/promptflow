@@ -48,42 +48,34 @@ class PythonValidation:
                 f"Generated code too long / complex to be parsed by ast: {code}"
             )
 
-        has_imports = False
         top_level_nodes = list(ast.iter_child_nodes(code_tree))
-        for node in top_level_nodes:
-            if isinstance(node, ast.Import) or isinstance(node, ast.ImportFrom):
-                has_imports = True
-
+        has_imports = any(
+            isinstance(node, (ast.Import, ast.ImportFrom))
+            for node in top_level_nodes
+        )
         if not self.allow_imports and has_imports:
             raise ValueError(f"Generated code has disallowed imports: {code}")
 
-        if (
-            not self.allow_command_exec
-            or not self.allow_imports
-        ):
-            for node in ast.walk(code_tree):
-                if (
-                    (not self.allow_command_exec)
-                    and isinstance(node, ast.Call)
-                    and (
-                        (
-                            hasattr(node.func, "id")
-                            and node.func.id in COMMAND_EXECUTION_FUNCTIONS
-                        )
-                        or (
-                            isinstance(node.func, ast.Attribute)
-                            and node.func.attr in COMMAND_EXECUTION_FUNCTIONS
-                        )
-                    )
+        for node in ast.walk(code_tree):
+            if not self.allow_command_exec:
+                if isinstance(node, ast.Call) and (
+                    hasattr(node.func, "id")
+                    and node.func.id in COMMAND_EXECUTION_FUNCTIONS
+                    or isinstance(node.func, ast.Attribute)
+                    and node.func.attr in COMMAND_EXECUTION_FUNCTIONS
                 ):
                     raise ValueError(
                         f"Found illegal command execution function "
                         f"{node.func.id} in code {code}"
                     )
 
-                if (not self.allow_imports) and (
-                    isinstance(node, ast.Import) or isinstance(node, ast.ImportFrom)
+                if not self.allow_imports and (
+                    isinstance(node, (ast.Import, ast.ImportFrom))
                 ):
+                    raise ValueError(f"Generated code has disallowed imports: {code}")
+
+            elif not self.allow_imports:
+                if isinstance(node, (ast.Import, ast.ImportFrom)):
                     raise ValueError(f"Generated code has disallowed imports: {code}")
 
 

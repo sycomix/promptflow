@@ -57,4 +57,6 @@ class TestFlowContract:
             with open(flow_yaml, "r") as fin:
                 Flow.deserialize(yaml.safe_load(fin))
         error_message = "Node 'test_node' can't have both skip and activate condition."
-        assert str(e.value) == error_message, "Expected: {}, Actual: {}".format(error_message, str(e.value))
+        assert (
+            str(e.value) == error_message
+        ), f"Expected: {error_message}, Actual: {str(e.value)}"

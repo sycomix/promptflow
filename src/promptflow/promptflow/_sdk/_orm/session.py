@@ -102,8 +102,7 @@ def build_copy_sql(old_name: str, new_name: str, old_columns: List[str], new_col
     # append some NULLs for new columns
     columns = old_columns.copy() + ["NULL"] * (len(new_columns) - len(old_columns))
     select_stmt = "SELECT " + ", ".join(columns) + f" FROM {old_name}"
-    sql = f"{insert_stmt} {select_stmt};"
-    return sql
+    return f"{insert_stmt} {select_stmt};"
 
 
 def generate_legacy_tablename(engine, tablename: str) -> str:
@@ -154,7 +153,7 @@ def create_or_update_table(engine, orm_class, tablename: str) -> None:
 
     # same schema, no action needed
     if db_schema_version == sdk_schema_version:
-        return
+        pass
     elif db_schema_version > sdk_schema_version:
         # schema in database is later than SDK schema
         # though different, we have design principal that later schema will always have no less columns
@@ -167,7 +166,6 @@ def create_or_update_table(engine, orm_class, tablename: str) -> None:
             "we highly recommend upgrading to the latest version of SDK for the best experience."
         )
         print_yellow_warning(warning_message)
-        return
     else:
         # schema in database is older than SDK schema
         # so we have to create table with new schema
@@ -191,7 +189,8 @@ def create_or_update_table(engine, orm_class, tablename: str) -> None:
             connection.execute(text(copy_sql))
         # update schema info finally
         update_current_schema(engine, orm_class, tablename)
-        return
+
+    return
 
 
 def create_table_if_not_exists(engine, table_name, orm_class) -> None:

@@ -45,7 +45,7 @@ class BulkResult:
         )
 
     def _get_aggr_run_infos(self):
-        return (node_run_info for node_run_info in self.aggr_results.node_run_infos.values())
+        return iter(self.aggr_results.node_run_infos.values())
 
     def get_status_summary(self):
         line_run_infos = self._get_line_run_infos()

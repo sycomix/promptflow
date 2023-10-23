@@ -225,10 +225,7 @@ class PFClient:
         """
         if not os.path.exists(flow):
             raise FileNotFoundError(f"flow path {flow} does not exist")
-        if is_remote_uri(data):
-            # Pass through ARM id or remote url, the error will happen in runtime if format is not correct currently.
-            pass
-        else:
+        if not is_remote_uri(data):
             if data and not os.path.exists(data):
                 raise FileNotFoundError(f"data path {data} does not exist")
         if not run and not data:
@@ -342,8 +339,7 @@ class PFClient:
         if component_type != "parallel":
             raise NotImplementedError(f"Component type {component_type} is not supported yet.")
 
-        # TODO: confirm if we should keep flow operations
-        component = self._flows.load_as_component(
+        return self._flows.load_as_component(
             flow=flow,
             columns_mapping=columns_mapping,
             variant=variant,
@@ -355,7 +351,6 @@ class PFClient:
             display_name=display_name,
             tags=tags,
         )
-        return component
 
     def _add_user_agent(self, kwargs) -> None:
         user_agent = kwargs.pop("user_agent", None)

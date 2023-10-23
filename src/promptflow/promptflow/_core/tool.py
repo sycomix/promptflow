@@ -64,7 +64,7 @@ def tool(f: Callable) -> Callable:
 
 def parse_all_args(argnames, args, kwargs) -> dict:
     """Parse args + kwargs to kwargs."""
-    all_args = {name: value for name, value in zip(argnames, args)}
+    all_args = dict(zip(argnames, args))
     all_args.update(kwargs)
     return all_args
 

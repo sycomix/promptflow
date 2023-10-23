@@ -147,12 +147,7 @@ class ErrorResponse:
 
     @property
     def innermost_error_code(self):
-        error_codes = self.error_codes
-
-        if error_codes:
-            return error_codes[-1]
-
-        return None
+        return error_codes[-1] if (error_codes := self.error_codes) else None
 
 
 class ExceptionPresenter:
@@ -374,7 +369,4 @@ def infer_error_code_from_class(cls):
 
     if cls == UserErrorException:
         return RootErrorCode.USER_ERROR
-    if cls == ValidationException:
-        return "ValidationError"
-
-    return cls.__name__
+    return "ValidationError" if cls == ValidationException else cls.__name__

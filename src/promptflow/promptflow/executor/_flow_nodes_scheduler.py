@@ -35,8 +35,8 @@ class FlowNodesScheduler:
         self.inputs = inputs
         parent_context = contextvars.copy_context()
         with ThreadPoolExecutor(
-            max_workers=node_concurrency, initializer=set_context, initargs=(parent_context,)
-        ) as executor:
+                max_workers=node_concurrency, initializer=set_context, initargs=(parent_context,)
+            ) as executor:
             self.future_to_node: Dict[Future, Node] = {}
             self._execute_nodes(dag_manager, executor)
 
@@ -50,7 +50,7 @@ class FlowNodesScheduler:
                         del self.future_to_node[each_future]
                     self._execute_nodes(dag_manager, executor)
                 except Exception as e:
-                    for unfinished_future in self.future_to_node.keys():
+                    for unfinished_future in self.future_to_node:
                         node_name = self.future_to_node[unfinished_future].name
                         logger.error(f"One node execution failed, cancel all running tasks. {node_name}.")
                         # We can't cancel running tasks here, only pending tasks could be cancelled.
@@ -60,15 +60,9 @@ class FlowNodesScheduler:
         return dag_manager.completed_nodes_outputs, dag_manager.bypassed_nodes
 
     def _execute_nodes(self, dag_manager: DAGManager, executor: ThreadPoolExecutor):
-        # Skip nodes and update node run info until there are no nodes to bypass
-        nodes_to_bypass = dag_manager.pop_bypassable_nodes()
-        while nodes_to_bypass:
+        while nodes_to_bypass := dag_manager.pop_bypassable_nodes():
             self._bypass_nodes(dag_manager, nodes_to_bypass)
-            nodes_to_bypass = dag_manager.pop_bypassable_nodes()
-
-        # Submit nodes that are ready to run
-        nodes_to_exec = dag_manager.pop_ready_nodes()
-        if nodes_to_exec:
+        if nodes_to_exec := dag_manager.pop_ready_nodes():
             self._submit_nodes(executor, dag_manager, nodes_to_exec)
 
     def _collect_outputs(self, completed_futures: List[Future]):

@@ -178,10 +178,10 @@ def create_connection(file_path, params_override=None, name=None):
     if name:
         params_override.append({"name": name})
     connection = load_connection(source=file_path, params_override=params_override)
-    existing_connection = _client.connections.get(connection.name, raise_error=False)
-    if existing_connection:
+    if existing_connection := _client.connections.get(
+        connection.name, raise_error=False
+    ):
         logger.warning(f"Connection with name {connection.name} already exists. Updating it.")
-        # Note: We don't set the existing secret back here, let user input the secrets.
     validate_and_interactive_get_secrets(connection)
     connection = _client.connections.create_or_update(connection)
     print(json.dumps(connection._to_dict(), indent=4))
@@ -204,8 +204,9 @@ def _upsert_connection_from_file(file, params_override=None):
     params_override = params_override or []
     params_override.append(load_yaml(file))
     connection = load_connection(source=file, params_override=params_override)
-    existing_connection = _client.connections.get(connection.name, raise_error=False)
-    if existing_connection:
+    if existing_connection := _client.connections.get(
+        connection.name, raise_error=False
+    ):
         connection = _Connection._load(data=existing_connection._to_dict(), params_override=params_override)
         validate_and_interactive_get_secrets(connection, is_update=True)
         # Set the secrets not scrubbed, as _to_dict() dump scrubbed connections.

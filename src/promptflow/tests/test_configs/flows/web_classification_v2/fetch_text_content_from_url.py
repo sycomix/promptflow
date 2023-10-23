@@ -24,5 +24,5 @@ def fetch_text_content_from_url(url: str):
             print(msg)
             return "No available content"
     except Exception as e:
-        print("Get url failed with error: {}".format(e))
+        print(f"Get url failed with error: {e}")
         return "No available content"

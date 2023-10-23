@@ -11,9 +11,7 @@ from ghactions_driver.telemetry_obj import Telemetry
 def local_filter(callback, array: [Path]):
     results = []
     for index, item in enumerate(array):
-        result = callback(item, index, array)
-        # if returned true, append item to results
-        if result:
+        if result := callback(item, index, array):
             results.append(item)
     return results
 
@@ -27,10 +25,7 @@ def no_readme_generation_filter(item: Path, index, array) -> bool:
             return False
 
         full_text = readme_parser(item.relative_to(ReadmeStepsManage.git_base_dir()))
-        if full_text == "":
-            return False
-        else:
-            return True
+        return full_text != ""
     except Exception as error:
         print(error)
         return False  # generate readme

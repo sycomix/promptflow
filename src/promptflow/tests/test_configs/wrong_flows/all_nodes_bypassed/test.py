@@ -3,4 +3,4 @@ from promptflow import tool
 
 @tool
 def test(text: str):
-    return text + "hello world!"
+    return f"{text}hello world!"

@@ -21,12 +21,12 @@ class AOAI(ABC):
         self.engine = kwargs.pop('model', None) or os.environ.get("MODEL")
         self.total_tokens = 4000
         self.max_tokens = kwargs.pop('max_tokens', None) or os.environ.get("MAX_TOKENS") or 1200
-        if self.engine == "gpt-4-32k":
-            self.total_tokens = 31000
-        if self.engine == "gpt-4":
-            self.total_tokens = 7000
         if self.engine == "gpt-3.5-turbo-16k":
             self.total_tokens = 15000
+        elif self.engine == "gpt-4":
+            self.total_tokens = 7000
+        elif self.engine == "gpt-4-32k":
+            self.total_tokens = 31000
         if self.max_tokens > self.total_tokens:
             raise ValueError(f"max_tokens must be less than total_tokens, "
                              f"total_tokens is {self.total_tokens}, max_tokens is {self.max_tokens}")
@@ -58,11 +58,9 @@ class AOAI(ABC):
         for i in range(3):
             try:
                 if not stream:
-                    res = await self.async_query_with_no_stream(text, **kwargs)
-                    return res
-                else:
-                    res = await self.async_query_with_stream(text, **kwargs)
-                    return "".join(res)
+                    return await self.async_query_with_no_stream(text, **kwargs)
+                res = await self.async_query_with_stream(text, **kwargs)
+                return "".join(res)
             except Exception as e:
                 logging.error(f"llm response error, message={e}, "
                               f"will retry request llm after {(i + 1) * (i + 1)} seconds.")

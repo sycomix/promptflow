@@ -13,7 +13,6 @@ def executor_creation_func(storage):
 
 def executor_creation_func_timeout(storage):
     time.sleep(60)
-    pass
 
 
 def end_process(healthy_ensured_process):

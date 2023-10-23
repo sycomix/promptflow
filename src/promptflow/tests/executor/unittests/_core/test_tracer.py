@@ -7,8 +7,7 @@ from promptflow.contracts.trace import Trace, TraceType
 
 
 def generator():
-    for i in range(3):
-        yield i
+    yield from range(3)
 
 
 @pytest.mark.unittest

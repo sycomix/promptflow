@@ -31,9 +31,7 @@ class PFBytes(bytes):
     @staticmethod
     def _get_extension_from_type(mime_type: str):
         ext = mime_type.split("/")[-1]
-        if ext == "*":
-            return None
-        return ext
+        return None if ext == "*" else ext
 
     def save_to_file(self, file_name: str, folder_path: Path, relative_path: Path = None):
         ext = PFBytes._get_extension_from_type(self._mime_type)
@@ -54,7 +52,10 @@ class PFBytes(bytes):
             if isinstance(obj, PFBytes):
                 file_name = str(uuid.uuid4())
                 return obj.save_to_file(file_name, folder_path, relative_path)
-            raise TypeError("Object of type '%s' is not JSON serializable" % type(obj).__name__)
+            raise TypeError(
+                f"Object of type '{type(obj).__name__}' is not JSON serializable"
+            )
+
         return pfbytes_file_reference_encoder
 
 
@@ -76,6 +77,4 @@ class Image(PFBytes):
         return base64.b64encode(self).decode("utf-8")
 
     def serialize(self, encoder: Callable = None):
-        if encoder is None:
-            return self.__str__()
-        return encoder(self)
+        return self.__str__() if encoder is None else encoder(self)

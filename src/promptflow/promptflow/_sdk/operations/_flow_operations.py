@@ -392,7 +392,9 @@ class FlowOperations:
 
         executable = ExecutableFlow.from_yaml(flow_file=Path(flow_dag_path.name), working_dir=flow_dag_path.parent)
         flow_inputs = {flow_input: value.default for flow_input, value in executable.inputs.items()}
-        flow_inputs_params = ["=".join([flow_input, flow_input]) for flow_input, _ in flow_inputs.items()]
+        flow_inputs_params = [
+            "=".join([flow_input, flow_input]) for flow_input in flow_inputs
+        ]
         flow_inputs_params = ",".join(flow_inputs_params)
 
         copy_tree_respect_template_and_ignore_file(
@@ -448,17 +450,9 @@ class FlowOperations:
         if format not in ["docker", "executable"]:
             raise ValueError(f"Unsupported export format: {format}")
 
-        if variant:
-            tuning_node, node_variant = parse_variant(variant)
-        else:
-            tuning_node, node_variant = None, None
-
+        tuning_node, node_variant = parse_variant(variant) if variant else (None, None)
         flow_only = kwargs.pop("flow_only", False)
-        if flow_only:
-            output_flow_dir = output_dir
-        else:
-            output_flow_dir = output_dir / "flow"
-
+        output_flow_dir = output_dir if flow_only else output_dir / "flow"
         new_flow_dag_path = self._build_flow(
             flow_dag_path=flow.flow_dag_path,
             output=output_flow_dir,
@@ -588,13 +582,12 @@ class FlowOperations:
 
         flow_tools_meta = flow_tools.pop("code", {})
 
-        tools_errors = {}
         nodes_with_error = [node_name for node_name, message in flow_tools_meta.items() if isinstance(message, str)]
-        for node_name in nodes_with_error:
-            tools_errors[node_name] = flow_tools_meta.pop(node_name)
-
-        additional_includes = _get_additional_includes(flow.flow_dag_path)
-        if additional_includes:
+        tools_errors = {
+            node_name: flow_tools_meta.pop(node_name)
+            for node_name in nodes_with_error
+        }
+        if additional_includes := _get_additional_includes(flow.flow_dag_path):
             additional_files = {}
             for include in additional_includes:
                 include_path = Path(include) if Path(include).is_absolute() else flow.code / include

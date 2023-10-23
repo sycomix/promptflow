@@ -68,8 +68,7 @@ class LocalAzureConnectionOperations:
         :return: connection object retrieved from the database.
         :rtype: ~promptflow.sdk.entities._connection._Connection
         """
-        with_secrets = kwargs.get("with_secrets", False)
-        if with_secrets:
+        if with_secrets := kwargs.get("with_secrets", False):
             return self._pfazure_client._arm_connections.get(name)
         return self._pfazure_client._connections.get(name)
 

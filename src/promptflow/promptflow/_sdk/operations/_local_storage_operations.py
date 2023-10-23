@@ -229,9 +229,8 @@ class LocalStorageOperations(AbstractRunStorage):
     def load_flow_tools_json(self) -> dict:
         if not self._flow_tools_json_path.is_file():
             return generate_flow_tools_json(self._snapshot_folder_path, dump=False)
-        else:
-            with open(self._flow_tools_json_path, mode="r", encoding=DEFAULT_ENCODING) as f:
-                return json.load(f)
+        with open(self._flow_tools_json_path, mode="r", encoding=DEFAULT_ENCODING) as f:
+            return json.load(f)
 
     def load_io_spec(self) -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, str]]]:
         """Load input/output spec from DAG."""
@@ -398,12 +397,11 @@ class LocalStorageOperations(AbstractRunStorage):
 
     @staticmethod
     def _outputs_padding(df: pd.DataFrame, expected_rows: int) -> pd.DataFrame:
-        missing_lines = []
         lines_set = set(df[LINE_NUMBER].values)
-        for i in range(expected_rows):
-            if i not in lines_set:
-                missing_lines.append({LINE_NUMBER: i})
-        if len(missing_lines) == 0:
+        missing_lines = [
+            {LINE_NUMBER: i} for i in range(expected_rows) if i not in lines_set
+        ]
+        if not missing_lines:
             return df
         df_to_append = pd.DataFrame(missing_lines)
         res = pd.concat([df, df_to_append], ignore_index=True)

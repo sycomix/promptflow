@@ -100,10 +100,7 @@ class NodeLogWriter(TextIOBase):
     def get_log(self, run_id: str) -> str:
         """Get log associated with run id."""
         string_io: StringIO = self.run_id_to_stdout.get(run_id)
-        if string_io is None:
-            return None
-
-        return string_io.getvalue()
+        return None if string_io is None else string_io.getvalue()
 
     def write(self, s: str):
         """Override TextIO's write method and writes input string into a stringio

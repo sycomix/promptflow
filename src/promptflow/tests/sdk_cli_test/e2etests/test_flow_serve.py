@@ -192,7 +192,7 @@ def test_stream_python_stream_tools(
         else:
             # For json response, iterator is joined into a string with "" as delimiter
             words = expected_output.split()
-            merged_text = "".join(word + " " for word in words)
+            merged_text = "".join(f"{word} " for word in words)
             expected_json = {"output_echo": merged_text}
             result = response.json
             assert expected_json == result

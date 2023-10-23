@@ -18,14 +18,13 @@ def get_connection_string(storage_account, storage_key):
 
 
 def get_object_sas_token(storage_account, storage_key):
-    sas_token = generate_account_sas(
+    return generate_account_sas(
         account_name=storage_account,
         account_key=storage_key,
         resource_types=ResourceTypes(object=True),
         permission=AccountSasPermissions(read=True),
         expiry=datetime.utcnow() + timedelta(days=365),
     )
-    return sas_token
 
 
 def get_wheel_distribution_name(package_name):
@@ -135,8 +134,8 @@ def publish_package_internal(package_dir_path, storage_key, release_config):
 
     # Update index.html for the package distributions
     for package_name, distribution_indexes in packages_indexes.items():
-        package_index_file = f"{package_name}_index.html"
         if len(distribution_indexes) > 0:
+            package_index_file = f"{package_name}_index.html"
             print(f"{len(distribution_indexes)} distributions found for package {package_name}. Updating index.html...")
             with open(package_index_file, "w", encoding="utf8") as index_file:
                 index_file.write("<!DOCTYPE html>\n")

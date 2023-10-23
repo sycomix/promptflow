@@ -64,7 +64,7 @@ def serialize(value: object, remove_null : bool = False, serialization_funcs: di
             if isinstance(value, cls):
                 return f(value)
     if isinstance(value, datetime):
-        return value.isoformat() + "Z"
+        return f"{value.isoformat()}Z"
     if isinstance(value, Enum):
         return value.value
     if isinstance(value, list):
@@ -107,12 +107,12 @@ def assertEqual(a: dict, b: dict, path: str = ""):
     if isinstance(a, dict):
         assert isinstance(b, dict), f"{path}: {type(a)} != {type(b)}"
         assert set(a.keys()) == set(b.keys()), f"{path}: {set(a.keys())} != {set(b.keys())}"
-        for key in a.keys():
-            assertEqual(a[key], b[key], path + "." + key)
+        for key in a:
+            assertEqual(a[key], b[key], f"{path}.{key}")
     elif isinstance(a, list):
         assert isinstance(b, list), f"{path}: {type(a)} != {type(b)}"
         assert len(a) == len(b), f"{path}: {len(a)} != {len(b)}"
         for i in range(len(a)):
-            assertEqual(a[i], b[i], path + f"[{i}]")
+            assertEqual(a[i], b[i], f"{path}[{i}]")
     else:
         assert a == b, f"{path}: {a} != {b}"

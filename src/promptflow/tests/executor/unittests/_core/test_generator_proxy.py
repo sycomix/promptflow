@@ -4,8 +4,7 @@ from promptflow._core.generator_proxy import GeneratorProxy, generate_from_proxy
 
 
 def generator():
-    for i in range(3):
-        yield i
+    yield from range(3)
 
 
 def iterator():

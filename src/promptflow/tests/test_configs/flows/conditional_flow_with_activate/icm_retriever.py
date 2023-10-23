@@ -3,4 +3,4 @@ from promptflow import tool
 
 @tool
 def icm_retriever(content: str) -> str:
-  return "ICM: " + content
+  return f"ICM: {content}"
